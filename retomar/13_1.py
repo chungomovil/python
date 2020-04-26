@@ -1,20 +1,23 @@
-"""Cargar una oración por teclado. Mostrar luego cuantos espacios en blanco se ingresaron. 
-Tener en cuenta que un espacio en blanco es igual a
+"""
+Cargar una oración por teclado. Mostrar luego cuantos espacios en blanco se ingresaron. Tener en cuenta que un espacio en blanco es igual a
 " ", en cambio una cadena vacía es """
 
-oracion=input("introducir una frase: ")
-espacio=0
+oracion=""
+espacios=0
 
-if oracion=="":
-    print("la oracion no contiene ningun caracter.")
-else:
-    for x in range(len(oracion)):
-        if oracion[x]==" ":
-            espacio+=1
-            if x<len(oracion)-1:
-                if oracion[x]==oracion[x+1]:
-                    espacio-=1
-    if espacio>0:
-        print("la oracion tiene",espacio,"espacios.")
+while len(oracion)==0:
+    oracion=str(input("Escribir una frase: "))
+    if len(oracion)==0:
+        print("no se ha escrito nada, la longitud de la oracion es:",len(oracion))
     else:
-        print("la oracion no contiene espacios.")
+        for x in range(len(oracion)-1):
+            if oracion[x]==" ":
+                espacios+=1
+                if oracion[x+1]==" ":
+                    espacios-=1
+        print("En la oracion: '",oracion.upper(),"'")
+        if espacios==1:
+            print("Hay",espacios,"espacio")
+        else:
+            print("Hay",espacios,"espacios")
+
