@@ -10,7 +10,7 @@ validar=False
 
 while validar==False:
     num=input("Numero de trabajadores: ")
-    validar=num.isdigit()                #Puede ser mejor usar este metodo para que no haya conflictos entre distintas versiones de python
+    validar=num.isdigit()
     if validar==True:
         num=int(num)
     else:
