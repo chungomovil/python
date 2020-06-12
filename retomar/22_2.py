@@ -12,14 +12,17 @@ for x in range(5):
             print("--> Solo valores numericos")
     numeros.append(numero)
 
+eliminados=[]
 posicion=0
 
 while posicion<len(numeros):
     if numeros[posicion]>=10:
         print("--> Se ha eliminado el numero",numeros[posicion])
-        numeros.pop(posicion)
+        eliminados.append(numeros.pop(posicion))
     else:
         posicion+=1
             
-print("-NUEVA LISTA-")
+print("-NUMEROS MENORES A 10-")
 print(numeros)
+print("-NUMEROS MAYORES O IGUALES A 10-")
+print(eliminados)
