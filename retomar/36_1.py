@@ -78,6 +78,5 @@ def ImprimirAnalista(empleados):
                 print("Salario: ",sueldo," €",sep="")
 
 plantilla=CargaEmple()
-print(plantilla)
 ModificarSueldo(plantilla)
 ImprimirAnalista(plantilla)
