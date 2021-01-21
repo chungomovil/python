@@ -16,7 +16,7 @@ def DivideLista(numeros):
     limite=int(len(numeros)/2) #PONER INT YA QUE AL DIVIDIR EL RESULTADO SE TRADUCE A FLOAT Y SELECTOR DE POSICIONES DE LA LISTA SOLO ACEPTA ENTEROS
     numeros_segunda=[]
     numeros_segunda.append(numeros[:limite])
-    del(numeros[:limite])
+    del(numeros[:limite]) #ASI SE ELIMINA CON EL SELECTOR DE POSICIONES
     return (numeros, numeros_segunda)
 
 def ImprimirListas(numerosprimera, numerossegunda):
