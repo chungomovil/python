@@ -39,38 +39,47 @@ def ExtraerIdconsulta(cadena):
     return int(idconsulta)
 
 #FUNCION EXTRAER CONTENIDO DE LA CELDA
-def ExtraerCampo(cadena):
+def ExtraerCampo(cadena, valor):
     frase=QuitarDecoracion(cadena)
-    inicio="Piel:"
-    claveinicio=frase.find(inicio)+len(inicio)
-    extraccion=frase[claveinicio:]
-    clavefin=extraccion.find("//")
-    extraccion=extraccion[:clavefin]
-    return extraccion
+    inicio=valor
+    claveinicio=frase.find(inicio)
+    #Controlar que no ingrese al no encontrar el valor
+    if claveinicio<=0:
+        return ""
+    else:
+        claveinicio=claveinicio+len(inicio)
+        extraccion=frase[claveinicio:]
+        clavefin=extraccion.find("//")
+        extraccion=extraccion[:clavefin]
+        return extraccion
 
 
-
-for x in range(6891):
+columna=input("Nombre de la columna de la base de datos: ").lower()
+filtro=input("Valor a filtrar en el documento: ")
+for x in range(9427):
     #OBTENER ARCHIVO
     archivo=open("e:/Documentos/programacion/github/python/retomar/proyecto-exportar/explofisicas.txt","r") # se debe de abrir el archivo en cada bucle
     contenido=archivo.readlines()[x]    #Leer linea del archivo de datos
     
     idpaciente=ExtraerIdpaciente(contenido)
     idconsulta=ExtraerIdconsulta(contenido)
-    campo=ExtraerCampo(contenido)
+    campo=ExtraerCampo(contenido, filtro)
     contenido=archivo.close()   #cerrarlo para que se pueda volver a abrir en el siguiente bucle
-    
-    #CONEXION A BASE DE DATOS
-    conexion=mysql.connector.connect(host="192.168.1.15", user="prueba", passwd="consultoriodb", database="clinica") #Se debe reiniciar la conexion en cada bucle
-    cursor1=conexion.cursor()
+    if campo!="":
+        #CONEXION A BASE DE DATOS
+        conexion=mysql.connector.connect(host="192.168.1.11", user="externo", passwd="consultoriodb", database="clinica") #Se debe reiniciar la conexion en cada bucle
+        cursor1=conexion.cursor()
 
-    #INSERTAR EN LA BASE DE DATOS
-    sql="UPDATE consulta set piel=%s WHERE idconsulta=%s"
-    datos=(campo, idconsulta)
-    cursor1.execute(sql, datos)
-    conexion.commit()
-    conexion.close()
+        #INSERTAR EN LA BASE DE DATOS
+        sql="UPDATE consulta set columna=%s WHERE idconsulta=%s"
+        datos=(campo, idconsulta)
+        sql=sql.replace("columna", columna)
+        cursor1.execute(sql, datos)
+        conexion.commit()
+        conexion.close()
 
-    #MOSTRAR SALIDA DE LA OPERACION
-    print("--> Se modificado la consulta con ID %s" % (idconsulta))
+        #MOSTRAR SALIDA DE LA OPERACION
+        print("--> Se modificado la consulta con ID %s" % (idconsulta))
+    else:
+        print("--> Se ha omitido. Motivo vacio.")
     print("--> ITERACION NUMERO %s <--" % (x))
