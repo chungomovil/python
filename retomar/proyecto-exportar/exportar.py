@@ -67,7 +67,7 @@ for x in range(9427):
     contenido=archivo.close()   #cerrarlo para que se pueda volver a abrir en el siguiente bucle
     if campo!="":
         #CONEXION A BASE DE DATOS
-        conexion=mysql.connector.connect(host="192.168.1.11", user="externo", passwd="consultoriodb", database="clinica") #Se debe reiniciar la conexion en cada bucle
+        conexion=mysql.connector.connect(host="*******", user="*****", passwd="*****", database="******") #Se debe reiniciar la conexion en cada bucle
         cursor1=conexion.cursor()
 
         #INSERTAR EN LA BASE DE DATOS
