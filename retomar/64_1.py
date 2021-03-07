@@ -20,6 +20,7 @@ class Aplicacion:
         self.dato2=tk.StringVar()
         self.paises=("Espania","Alemania","Cuba","Marruecos","China","Japon","Noruega","Suecia","Estados Unidos","Colombia","Ecuador") #Listar valores del combobox
         self.pais=ttk.Combobox(self.ventana, width=20, value=self.paises, textvariable=self.dato2)
+        self.pais.current(0)
         self.pais.grid(column=1, row=1)
         self.boton1=ttk.Button(self.ventana, text="Validar", command=self.Validar)
         self.boton1.grid(column=0, row=2)
