@@ -1,5 +1,9 @@
 {
     "python.linting.enabled": true,
+<<<<<<< HEAD
     "python.linting.pylintEnabled": true,
-    "python.pythonPath": "C:\\Users\\amanda\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
+    "python.pythonPath": "C:\\Users\\Recepcion\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe"
+=======
+    "python.linting.pylintEnabled": true
+>>>>>>> 350ffa7d8403266b4aba11381e64473a5493a979
 }
