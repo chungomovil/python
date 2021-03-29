@@ -56,9 +56,9 @@ class Aplicacion:
         self.lienzo1.create_arc(50, 50, 500, 400, fill="red", start=final1, extent=final2)
         self.lienzo1.create_arc(50, 50, 500, 400, fill="purple", start=final1+final2, extent=final3)
         #Textos aclaratorios de los trozos
-        self.lienzo1.create_text(650, 100, text="PP: "+str(dato1)+" votos", font="Arial", fill="white")
-        self.lienzo1.create_text(650,150, text="PSOE: "+str(dato2)+" votos", font="Arial", fill="white")
-        self.lienzo1.create_text(650, 200, text="Podemos: "+str(dato3)+" votos", font="Arial", fill="white")
+        self.lienzo1.create_text(650, 100, text="PP: "+str(dato1)+" votos", font="Arial", fill="blue")
+        self.lienzo1.create_text(650,150, text="PSOE: "+str(dato2)+" votos", font="Arial", fill="red")
+        self.lienzo1.create_text(650, 200, text="Podemos: "+str(dato3)+" votos", font="Arial", fill="purple")
 
 #Bloque principal
 iniciar=Aplicacion()
