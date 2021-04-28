@@ -1,0 +1,2 @@
+Esta palabra esdrújula, por lo que lleva tilde.
+Esta también debería mostrar una tilde justo AQUÍ.

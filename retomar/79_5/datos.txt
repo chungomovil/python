@@ -1,0 +1,6 @@
+Esto es una frase.
+Y esto es una segunda linea en el documento.
+Pero esto tambies es otra linea y la ultima.
+Agregamos una frase al final.
+No se deberian borrar las frases anteriores del documento.
+Pues eso es todo.
