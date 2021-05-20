@@ -12,16 +12,16 @@ Las interfaz visual para la carga debe ser:
 
 Imagen del menu:
 
-![menu](88_1.jpg)
+![menu](./imagenes/88_1.jpg)
 
 Imagen de la sección de carga de artículo nuevo:
 
-![carga-articulo](88_2.jpg)
+![carga-articulo](./imagenes/88_2.jpg)
 
 Imagen de la seccion de búsqueda del artículo por su código:
 
-![busca-articulo](88_3.jpg)
+![busca-articulo](./imagenes/88_3.jpg)
 
 Imagen de la seccion que lista todos los artículos:
 
-![listado-articulos](88_4.jpg)
+![listado-articulos](./imagenes/88_4.jpg)
