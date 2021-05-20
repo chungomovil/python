@@ -1,0 +1,27 @@
+## Aplicacion Tkinter con base de datos SQLite
+
+### Parte I
+
+Desarrollar una aplicación visual con la librería tkinter que permita implementar los algoritmos de carga de artículos, consulta por código y listado completo.
+
+Trabajaremos con la base de datos 'bd1.db' que creamos en el concepto anterior.
+
+**(EXTRA)** Incluir un menu de opciones para salir del programa y redimensionar la ventana.
+
+Las interfaz visual para la carga debe ser:
+
+Imagen del menu:
+
+![menu](88_1.jpg)
+
+Imagen de la sección de carga de artículo nuevo:
+
+![carga-articulo](88_2.jpg)
+
+Imagen de la seccion de búsqueda del artículo por su código:
+
+![busca-articulo](88_3.jpg)
+
+Imagen de la seccion que lista todos los artículos:
+
+![listado-articulos](88_4.jpg)
