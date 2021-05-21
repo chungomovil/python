@@ -32,8 +32,8 @@ Agregar dos pestañas al programa de administración de artículos que permitan 
 
 La interfaz visual para la eliminación de un articulo debe ser:
 
-![eliminar-articulo](./imagenes/88.5.jpg)
+![eliminar-articulo](./imagenes/88_5.jpg)
 
 Imagen de la sección para modificar un articulo:
 
-![modificar-articulo](./imagenes/88.6.jpg)
+![modificar-articulo](./imagenes/88_6.jpg)
