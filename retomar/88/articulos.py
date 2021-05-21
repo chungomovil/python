@@ -51,4 +51,26 @@ class BaseDatos:
         #Retornamos los articulos
         return articulo
 
+    #Metodo para borrar un articulo
+    def BorrarArticulo(self, codigo):
+        #Abrimos conexion
+        conexion=self.Abrir()
+        #Ejecutamos consulta
+        conexion.execute("DELETE FROM articulos WHERE codigo=?", (codigo))
+        #Aplicamos cambios
+        conexion.commit()
+        #Cerramos la conexion
+        conexion.close()
+
+    #Metodo para modificar un articulo
+    def ModificarArticulo(self, codigo, descripcion, precio):
+        #Abrimos la conexion
+        conexion=self.Abrir()
+        #Ejecutamos la consulta
+        conexion.execute("UPDATE articulos SET descripcion=?, precio=? WHERE codigo=?", (descripcion, precio, codigo))
+        #Fijamos los cambios
+        conexion.commit()
+        #Cerramos la conexion
+        conexion.close()
+
 

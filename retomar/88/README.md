@@ -25,3 +25,15 @@ Imagen de la seccion de búsqueda del artículo por su código:
 Imagen de la seccion que lista todos los artículos:
 
 ![listado-articulos](./imagenes/88_4.jpg)
+
+### Parte II
+
+Agregar dos pestañas al programa de administración de artículos que permitan borrar un artículo ingresando su código y otra opción que permita consultar y modificar la descripción y precio de un artículo.
+
+La interfaz visual para la eliminación de un articulo debe ser:
+
+![eliminar-articulo](./imagenes/88.5.jpg)
+
+Imagen de la sección para modificar un articulo:
+
+![modificar-articulo](./imagenes/88.6.jpg)
