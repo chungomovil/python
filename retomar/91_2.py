@@ -18,7 +18,6 @@ class Aplicacion:
         self.ventana.mainloop()
     
     def CrearTablero(self):
-        self.Casillas=[]
         for x in range(10):
             linea=[]
             for columna in range(10):
@@ -53,8 +52,6 @@ class Aplicacion:
                     self.Recorrer(fila+1, columna)
                     self.Recorrer(fila, columna-1)
                     self.Recorrer(fila-1, columna)
-        
-    
 
     def Aleatorizar(self):
         num=random.randint(0, 2)
@@ -63,9 +60,6 @@ class Aplicacion:
         else:
             return 0
 
-        
-        
+
+
 iniciar=Aplicacion()
-
-
-
