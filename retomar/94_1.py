@@ -1,4 +1,4 @@
-"""Definir una lista con 5 valores enteros, luego a partir de la primer lista generar una segunda lista con los valores elevados al cuadrado. USAR COMPRESION DE LISTA."""
+"""Definir una lista con 5 valores enteros, luego a partir de la primer lista generar una segunda lista con los valores elevados al cuadrado. USAR COMPRENSION DE LISTA."""
 
 #Creamos la lista principal
 lista1=[9, 81, -19, 0, 998]
