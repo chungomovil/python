@@ -12,15 +12,15 @@ Las interfaz visual para la carga debe ser:
 
 Imagen de la sección de carga de artículo nuevo:
 
-![carga-articulo](./imagenes/88_2.jpg)
+![carga-articulo](./imagenes/97_1.jpg)
 
 Imagen de la seccion de búsqueda del artículo por su código:
 
-![busca-articulo](./imagenes/88_3.jpg)
+![busca-articulo](./imagenes/97_2.jpg)
 
 Imagen de la seccion que lista todos los artículos:
 
-![listado-articulos](./imagenes/88_4.jpg)
+![listado-articulos](./imagenes/97_3.jpg)
 
 ### Parte II
 
@@ -28,8 +28,8 @@ Agregar dos pestañas al programa de administración de artículos que permitan 
 
 La interfaz visual para la eliminación de un articulo debe ser:
 
-![eliminar-articulo](./imagenes/88_5.jpg)
+![eliminar-articulo](./imagenes/97_4.jpg)
 
 Imagen de la sección para modificar un articulo:
 
-![modificar-articulo](./imagenes/88_6.jpg)
+![modificar-articulo](./imagenes/97_5.jpg)
