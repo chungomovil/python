@@ -155,36 +155,44 @@ class Aplicacion:
                 self.mensaje(1)
                 #Este metodo de la ventana hace que la interfaz visual se pause un numero de milisegundos especificados (basicamente para leer el mensaje)
                 self.ventana.after(1000)
-                self.mensaje(2)
-                self.ventana.after(1000)
-                #Retornamos la lista final de pacientes recientes
-                recientes=self.conectar.ListarRecientes()
-                self.mensaje(3)
-                #Retornamos la lista final de recientes que tengan menos de 3 asistencias o no hayan acudido hoy
-                #No hace falta pausar la interfaz ya que esta operacion tarda un par de segundos
-                recientes_con_rangos=self.conectar.CalcularPeriodos(recientes)
-                self.mensaje(4)
-                self.ventana.after(1000)
-                #Obtenemos la lista de los pacientes filtrados por seguro
-                listado_final=self.conectar.FiltrarSeguro(peticion_adeslas, peticion_dkv, recientes_con_rangos)
-                #Si devuelve falte, es decir, que es superior lo exigido a lo existente
-                if listado_final==False:
-                    #Informamos al usuario del error
-                    mb.showwarning("VALOR INCORRECTO","Algun valor supera la cantidad de pacientes disponibles.")
-                else:
-                    #Preguntamos al usuario si realmente desea insertarlos en la BD
-                    respuesta=mb.askyesno("Informacion",f"Se va a proceder a insertar {len(listado_final[0])+len(listado_final[1])} citas.")
-                    #Si afirma llamamos al metodo encargado y los insertamos
-                    if respuesta==True:
-                        self.conectar.Insertar(listado_final, fecha)
-                        self.mensaje(5)
-                        self.ventana.after(1000)
-                        #Llamamos al metodo encargado de escribir en el scrolledtext las inserciones que acabamos de realizar
-                        self.MostrarInserciones(listado_final)
-                        self.mensaje(6)
-                    #Si rechaza vaciamos el campo de estado del programa
+                #Establecemos conexion a la base de datos y retornamos resultado
+                conexion=self.conectar.AbrirConexion()
+                #Si se establece la conexion
+                if conexion!=False:
+                    self.mensaje(2)
+                    self.ventana.after(1000)
+                    #Retornamos la lista final de pacientes recientes
+                    recientes=self.conectar.ListarRecientes()
+                    self.mensaje(3)
+                    #Retornamos la lista final de recientes que tengan menos de 3 asistencias o no hayan acudido hoy
+                    #No hace falta pausar la interfaz ya que esta operacion tarda un par de segundos
+                    recientes_con_rangos=self.conectar.CalcularPeriodos(recientes)
+                    self.mensaje(4)
+                    self.ventana.after(1000)
+                    #Obtenemos la lista de los pacientes filtrados por seguro
+                    listado_final=self.conectar.FiltrarSeguro(peticion_adeslas, peticion_dkv, recientes_con_rangos)
+                    #Si devuelve falte, es decir, que es superior lo exigido a lo existente
+                    if listado_final==False:
+                        #Informamos al usuario del error
+                        mb.showwarning("VALOR INCORRECTO","Algun valor supera la cantidad de pacientes disponibles.")
                     else:
-                        self.mensaje("")
+                        #Preguntamos al usuario si realmente desea insertarlos en la BD
+                        respuesta=mb.askyesno("Informacion",f"Se va a proceder a insertar {len(listado_final[0])+len(listado_final[1])} citas.")
+                        #Si afirma llamamos al metodo encargado y los insertamos
+                        if respuesta==True:
+                            self.conectar.Insertar(listado_final, fecha)
+                            self.mensaje(5)
+                            self.ventana.after(1000)
+                            #Llamamos al metodo encargado de escribir en el scrolledtext las inserciones que acabamos de realizar
+                            self.MostrarInserciones(listado_final)
+                            self.mensaje(6)
+                        #Si rechaza vaciamos el campo de estado del programa
+                        else:
+                            self.mensaje("")
+                else:
+                    #Informamos de que no se pudo establecer la conexion con el servidor
+                    mb.showerror("ERROR", "No se pudo conectar a la base de datos.")
+                    self.mensaje("")
             #Informamos de que ambos campos de seguros estan a 0
             else:
                 mb.showerror("ERROR", "Los campos de Adeslas y DKV estan en 0.")

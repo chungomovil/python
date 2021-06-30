@@ -11,8 +11,13 @@ class Operaciones:
     #Metodo para establecer conexion con la BD
     def AbrirConexion(self):
         #Obtenemos las credenciales del modulo anterior y establecemos conexion
-        host, usuario, clave, database=credenciales.Credenciales()
-        conexion=mysql.connect(host=host, user=usuario, passwd=clave, database=database)
+        try:
+            host, usuario, clave, database=credenciales.Credenciales()
+            conexion=mysql.connect(host=host, user=usuario, passwd=clave, database=database)
+        #Procesamos la excepcion en caso de no encontrar el servidor
+        #No especifiqué una en concreta ya que en windows(cuando se compila a .exe) la excepcion no es del modulo mysql.connector.errors sino de OSError
+        except:
+            conexion=False
         #Retornamos conexion
         return conexion
 
