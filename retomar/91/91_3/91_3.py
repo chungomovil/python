@@ -12,6 +12,7 @@ class Buscaminas:
     def __init__(self):
         self.ventana=tk.Tk()
         self.ventana.title("BUSCAMINAS")
+        self.ventana.configure(bg="green")
         self.listacasillas=[]
         self.bombacerca=0
         self.bomba_imagen=tk.PhotoImage(file=ruta_bomba_imagen)
@@ -24,7 +25,7 @@ class Buscaminas:
         for x in range(10):
             fila=[]
             for i in range(10):
-                casilla=ttk.Button(self.ventana, width=7, command=lambda columna=x, fila=i: self.AnalizarTablero(columna, fila))
+                casilla=ttk.Button(self.ventana, width=7, command=lambda fila=x, columna=i: self.AnalizarTablero(fila, columna))
                 casilla.grid(column=i, row=x, ipadx=0, ipady=5)
                 fila.append(casilla)
             self.listacasillas.append(fila)
@@ -51,13 +52,27 @@ class Buscaminas:
             if fila==self.listabombas[x][0] and columna==self.listabombas[x][1]:
                 similitud=True
         return similitud
-    """PROBAR HACER UN FUNCION APARTE PARA PULSAR, LLAMAR DESDE ÉSTA A LA RECURSIVA QUE ANALICE Y RETORNE EL TOTAL DE BOMBAS DE ALREDEDOR"""
-    def AnalizarTablero(self, fila, columna, limite=False):
-        resultado=self.PisarBomba(fila, columna)
-        if resultado==True:
-            self.bombacerca+=1
+    
+    def SeleccionCasilla(self, fila, columna):
+        inicial=self.PisarBomba(fila, columna)
+        if inicial==True:
+            self.listacasillas[fila][columna].configure(image=self.bomba_imagen, compound="center")
         else:
-            if fila>0 and fila<9 and columna>0 and columna<9 and limite==False:
+            lista_recorrida=self.AnalizarTablero(fila, columna)
+            """if self.bombacerca==0:
+                for x in range(len(lista_recorrida)):
+                    fila_actual=lista_recorrida[x][0]
+                    columna_actual=lista_recorrida[x][1]
+                    self.listacasillas[fila_actual][columna_actual].configure(text="0")"""
+            self.listacasillas[fila][columna].configure(text=self.bombacerca)
+            self.bombacerca=0
+
+    def AnalizarTablero(self, fila, columna, limite=False, lista_recorrida=[]):
+        if fila>=0 and fila<10 and columna>=0 and columna<10:
+            resultado=self.PisarBomba(fila, columna)
+            if resultado==True:
+                self.bombacerca+=1
+            if limite!=True:
                 self.AnalizarTablero(fila-1, columna-1, True)
                 self.AnalizarTablero(fila-1, columna, True)
                 self.AnalizarTablero(fila-1, columna+1, True)
@@ -66,11 +81,13 @@ class Buscaminas:
                 self.AnalizarTablero(fila+1, columna, True)
                 self.AnalizarTablero(fila+1, columna-1, True)
                 self.AnalizarTablero(fila, columna-1, True)
-        self.listacasillas[fila][columna].configure(text=self.bombacerca)
-        self.bombacerca=0
+        #self.listacasillas[fila][columna].configure(text=self.bombacerca)
+        
+
+        #return lista_recorrida
 
 
-
-ejecutar=Buscaminas()
+if __name__=="__main__":
+    ejecutar=Buscaminas()
 
 
