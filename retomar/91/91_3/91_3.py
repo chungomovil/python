@@ -96,21 +96,24 @@ class Buscaminas:
 
     def SeleccionCasilla(self, fila, columna):
         inicial=self.PisarBomba(fila, columna)
-        if inicial==True:
-            self.listacasillas[fila][columna].configure(image=self.bomba_imagen, compound="center")
-            self.jugando=False
-            mb.showwarning("DERROTA","LO SIENTO. ¡HAS PISADO UNA BOOOMBA!")
-        else:
-            self.AnalizarTablero(fila, columna)
-        if len(self.destapadas)==90:
-            mb.showinfo("FELICIDADES","¡FELICIDADES, HAS GANADO!")
+        if self.jugando:
+            if inicial==True:
+                self.listacasillas[fila][columna].configure(image=self.bomba_imagen, compound="center")
+                self.jugando=False
+                self.RevelarBombas()
+                mb.showwarning("DERROTA","LO SIENTO. ¡HAS PISADO UNA BOOOMBA!")
+            else:
+                self.AnalizarTablero(fila, columna)
+            if len(self.destapadas)>=90:
+                self.jugando=False
+                mb.showinfo("FELICIDADES","¡FELICIDADES, HAS GANADO!")
 
     def AnalizarTablero(self, fila, columna):
         if fila>=0 and fila<10 and columna>=0 and columna<10:
             destapada=self.AnalizarDestapadas(fila, columna)
             if destapada==False:
                 self.destapadas.append([fila, columna])
-                self.AnalizarAlrededor(fila, columna)
+                self.AnalizarAlrededor(fila, columna, False)
                 self.listacasillas[fila][columna].configure(text=self.bombacerca)
                 if self.bombacerca==0:
                     self.EliminarCasilla(fila, columna)
@@ -123,16 +126,29 @@ class Buscaminas:
                     self.AnalizarTablero(fila+1, columna-1)
                     self.AnalizarTablero(fila, columna-1)
         self.bombacerca=0
-#VER POR QUE AL REINICIAR EL PROGRAMA LAS CASILLAS SE VUELVEN LOCAS, SOBRETODO LAS QUE ESTARIAN VACIAS
+
     def Reiniciar(self):
+        self.LimpiarTablero()
         self.listacasillas.clear()
         self.listabombas.clear()
         self.destapadas.clear()
-        self.bombacerca=0
+        self.jugando=True
         self.CrearCasillas()
         self.ColocarBombas()
-        print(self.listacasillas)
-        
+
+
+    def LimpiarTablero(self):
+        for x in range(len(self.listacasillas)):
+            for i in range(len(self.listacasillas[x])):
+                if self.listacasillas[x][i]!=None:
+                    self.listacasillas[x][i].destroy()
+                    self.listacasillas[x][i]=None
+    
+    def RevelarBombas(self):
+        for x in range(len(self.listabombas)):
+            fila=self.listabombas[x][0]
+            columna=self.listabombas[x][1]
+            self.listacasillas[fila][columna].configure(image=self.bomba_imagen)
 
     def Salir(self):
         sys.exit(0)
