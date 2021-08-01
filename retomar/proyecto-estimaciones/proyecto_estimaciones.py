@@ -1,6 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext as st
+import sys, os
+
+try:
+    ruta=os.path.dirname(__file__)
+except NameError:
+    ruta=os.path.dirname(sys.argv[0])
+finally:
+    imagenes=str(ruta)+"\\images"
 
 
 
@@ -11,8 +19,13 @@ class Calculadora():
         self.ventana.title("Calculadora de Estimaciones")
         self.listabotones=[]
         self.texto=""
+        self.imagen_ventana=tk.PhotoImage(file=os.path.join(imagenes, "calculator.png"))
+        self.imagen_retroceder=tk.PhotoImage(file=os.path.join(imagenes, "back-arrow.png"))
+        self.imagen_borrar=tk.PhotoImage(file=os.path.join(imagenes, "trash.png"))
+        self.imagen_igual=tk.PhotoImage(file=os.path.join(imagenes, "equal.png"))
+        self.imagen_suma=tk.PhotoImage(file=os.path.join(imagenes, "add.png"))
         self.framesuperior=ttk.Frame(self.ventana, borderwidth="2", relief="groove")
-        self.framesuperior.grid(column=0, row=0, columnspan=4, padx=40, pady=(40, 0), sticky="we")
+        self.framesuperior.grid(column=0, row=0, columnspan=4, padx=40, pady=(20, 0), sticky="we")
         self.framesuperior.columnconfigure(0, weight=1)
         self.framebotonesdigitos=ttk.Frame(self.ventana, borderwidth="2", relief="groove")
         self.framebotonesdigitos.grid(column=0, row=1, padx=(40,0))
@@ -37,28 +50,31 @@ class Calculadora():
         self.CrearVisorSuperior()
         self.CrearVisorResultado()
         self.visorresultado.tag_config("encabezado", foreground="blue")
-        self.encabezadoresultado=f"{'SOLO DIAS':<20}{'SOLO HORAS':<20}{'SOLO MINUTOS'}\n"
+        self.encabezadoresultado=f"{'SOLO DÍAS':<20}{'SOLO HORAS':<20}{'SOLO MINUTOS'}\n"
         self.visorresultado.delete("1.0", tk.END)
         self.visorresultado.insert(tk.END, self.encabezadoresultado, "encabezado")
+        self.ventana.bind("<Key>", self.TeclaPulsada)
         self.ventana.geometry("600x700")
+        self.ventana.resizable(False, False)
+        self.ventana.iconphoto(False, self.imagen_ventana)
         self.ventana.mainloop()
 
     def CrearBotonesDigitos(self):
         pos=9
         for x in range(3):
             for y in range (2, -1,-1):
-                boton=ttk.Button(self.framebotonesdigitos, text=str(pos), command=lambda numero=pos: self.NumerosPulsados(numero))
-                boton.grid(column=y, row=x, ipady=25)
+                boton=ttk.Button(self.framebotonesdigitos, width=13, text=str(pos), command=lambda numero=pos: self.NumerosPulsados(numero))
+                boton.grid(column=y, row=x, ipady=20)
                 self.listabotones.append(boton)
                 pos-=1
         boton=ttk.Button(self.framebotonesdigitos, text="0", command=lambda numero=pos: self.NumerosPulsados(numero))
-        boton.grid(column=0, row=4, columnspan=3, ipady=25, sticky="we")
+        boton.grid(column=0, row=4, columnspan=3, ipady=20, sticky="we")
         self.listabotones.append(boton)
 
     def CrearBotonesFechas(self):
         encabezadofecha=ttk.Label(self.framebotonesfechas, text="FORMATO")
         encabezadofecha.grid(column=0, row=0, padx=10, pady=15)
-        self.botondia=ttk.Button(self.framebotonesfechas, text="DIAS", command=lambda: self.FormatoPulsado("D"))
+        self.botondia=ttk.Button(self.framebotonesfechas, text="DÍAS", command=lambda: self.FormatoPulsado("D"))
         self.botondia.grid(column=0, row=1, padx=10, pady=15, ipady=5)
         self.botonhora=ttk.Button(self.framebotonesfechas, text="HORAS", command=lambda: self.FormatoPulsado("H"))
         self.botonhora.grid(column=0, row=2, padx=10, pady=15, ipady=5)
@@ -66,17 +82,17 @@ class Calculadora():
         self.botonminuto.grid(column=0, row=3, padx=10, pady=15, ipady=5)
     
     def CrearBotonesAcciones(self):
-        self.botonsumar=ttk.Button(self.framebotonsumar, text="+", command=self.SumarPulsado)
+        self.botonsumar=ttk.Button(self.framebotonsumar, image=self.imagen_suma, compound="center", command=self.SumarPulsado)
         self.botonsumar.grid(column=0, row=0, sticky="ns")
-        self.botonreset=ttk.Button(self.framebotonesacciones, text="C", command=self.Borrar)
+        self.botonreset=ttk.Button(self.framebotonesacciones, image=self.imagen_borrar, compound="center", command=self.Borrar)
         self.botonreset.grid(column=0, row=0, sticky="ns")
-        self.botoncorregir=ttk.Button(self.framebotonesacciones, text="<", command=self.Retroceder)
+        self.botoncorregir=ttk.Button(self.framebotonesacciones, image=self.imagen_retroceder, compound="center", command=self.Retroceder)
         self.botoncorregir.grid(column=0, row=1, sticky="ns")
-        self.botonresultado=ttk.Button(self.framebotonesacciones, text="=", command=self.MostrarResultado)
+        self.botonresultado=ttk.Button(self.framebotonesacciones, image=self.imagen_igual, compound="center", command=self.MostrarResultado)
         self.botonresultado.grid(column=0, row=2, sticky="ns")
 
     def CrearBotonesPorcentaje(self):
-        encabezado=ttk.Label(self.frameporcentaje, text="Gestion de Proyecto (%)", anchor="w")
+        encabezado=ttk.Label(self.frameporcentaje, text="Gestión de Proyecto (%)", anchor="w")
         encabezado.grid(column=0, row=0, padx=10, pady=(5, 0), sticky="we")
         self.porcentaje=ttk.Spinbox(self.frameporcentaje, from_=0, to=20, state="readonly")
         self.porcentaje.set("10")
@@ -84,7 +100,7 @@ class Calculadora():
 
 
     def CrearVisorSuperior(self):
-        self.visorsuperior=ttk.Label(self.framesuperior, text="", background="white", anchor="e", font=("Arial", 12), wraplength=550)
+        self.visorsuperior=ttk.Label(self.framesuperior, text="", background="white", anchor="e", font=("Arial", 12), wraplength=520)
         self.visorsuperior.grid(column=0, row=0, ipady=10, sticky="we")
     
     def CrearVisorResultado(self):
@@ -92,6 +108,22 @@ class Calculadora():
         titulo.grid(column=0, row=0, padx=20, pady=10, sticky="we")
         self.visorresultado=st.ScrolledText(self.frameresultado, width=58, height=10)
         self.visorresultado.grid(column=0, row=1, padx=20, pady=10)
+    
+    def TeclaPulsada(self, tecla):
+        tecla_codigo=tecla.keycode
+        tecla_caracter=tecla.char
+        if self.texto!="ERROR":
+            if tecla_codigo>=48 and tecla_codigo<=57 or tecla_codigo>=96 and tecla_codigo<=105:
+                self.NumerosPulsados(tecla_caracter)
+            elif tecla_codigo==68 or tecla_codigo==72 or tecla_codigo==77:
+                tecla_caracter=tecla_caracter.upper()
+                self.FormatoPulsado(tecla_caracter)
+            elif tecla_codigo==107:
+                self.SumarPulsado()
+            elif tecla_codigo==8:
+                self.Retroceder()
+            elif tecla_codigo==13:
+                self.MostrarResultado()
 
     def NumerosPulsados(self, numero):
         self.visorsuperior.configure(text=self.RetornarTexto(numero))
@@ -191,13 +223,13 @@ class Calculadora():
                 dias, horas, minutos=self.SumaInteligente(solominutos)
                 porcentaje_dias, porcentaje_horas, porcentaje_minutos=self.SumaInteligente(porcentaje_final)
                 programacion_dias, programacion_horas, programacion_minutos=self.SumaInteligente(porcentaje_programacion)
-                texto=f"{str(solodias)+' Dias':<20}{str(solohoras)+' Horas':<20}{str(solominutos)+' Minutos'}\n"
+                texto=f"{str(solodias)+' Días':<20}{str(solohoras)+' Horas':<20}{str(solominutos)+' Minutos'}\n"
                 encabezado_suma_inteligente=f"\n\n\nSUMA SIMPLIFICADA: "
-                encabezado_porcentaje_inteligente=f"\nGESTION DE PROYECTO ({porcentaje}%): "
-                encabezado_programacion_inteligente=f"\nPROGRAMACION: "
-                texto_suma_inteligente=f"{dias} Dias, {horas} Horas y {minutos} Minutos"
-                texto_porcentaje_inteligente=f"{porcentaje_dias} Dias, {porcentaje_horas} Horas y {porcentaje_minutos} Minutos"
-                texto_programacion_inteligente=f"{programacion_dias} Dias, {programacion_horas} Horas y {programacion_minutos} Minutos"
+                encabezado_porcentaje_inteligente=f"\nGESTIÓN DE PROYECTO ({porcentaje}%): "
+                encabezado_programacion_inteligente=f"\nPROGRAMACIÓN: "
+                texto_suma_inteligente=f"{dias} Días, {horas} Horas y {minutos} Minutos"
+                texto_porcentaje_inteligente=f"{porcentaje_dias} Días, {porcentaje_horas} Horas y {porcentaje_minutos} Minutos"
+                texto_programacion_inteligente=f"{programacion_dias} Días, {programacion_horas} Horas y {programacion_minutos} Minutos"
                 self.visorresultado.configure(state="normal")
                 self.visorresultado.delete("1.0", tk.END)
                 self.visorresultado.insert(tk.END, self.encabezadoresultado, "encabezado")
@@ -251,7 +283,7 @@ class Calculadora():
                 self.texto+=str(caracter)
         for x in range(len(self.texto)):
             if self.texto[x]=="D":
-                texto_convertido=texto_convertido+" Dias"
+                texto_convertido=texto_convertido+" Días"
             elif self.texto[x]=="H":
                 texto_convertido=texto_convertido+" Horas"
             elif self.texto[x]=="M":
