@@ -48,7 +48,7 @@ def BuscarNumero(navegador, telefono):
         #Escribimos el teléfono en el campo (recordar que al tener un atributo de clase y no id en HTML, pueden haber varios)
         campo[0].send_keys(telefono)
         #Tiempo que se pausará la ejecución (para dar margen a encontrar el teléfono)
-        time.sleep(30)
+        time.sleep(5)
         #Presionamos la tecla "ENTER"
         campo[0].send_keys(Keys.ENTER)
         #Verificamos que el contacto existe

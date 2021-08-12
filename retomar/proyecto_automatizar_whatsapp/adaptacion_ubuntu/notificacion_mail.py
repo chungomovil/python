@@ -43,7 +43,7 @@ def EnviarEmail(excepcion, listado_existentes="", listado_inexistentes=""):
     #Especificamos la cuenta de correo del que se enviará el mensaje
     mensaje["From"]=emisor
     #Especificamos la cuenta de correo al que se enviará el mensaje
-    mensaje["To"]=receptor
+    mensaje["To"]=f"{receptor[0]}, {receptor[1]}"
     #Lo transformamos en string y lo enviamos
     servidorSMTP.sendmail(emisor, receptor, mensaje.as_string())
     #Cerramos la conexion con gmail
