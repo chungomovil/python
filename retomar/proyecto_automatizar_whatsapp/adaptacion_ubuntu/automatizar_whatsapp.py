@@ -71,6 +71,7 @@ for nombre, apellidos, numero in listado_pacientes:
         if verificacion==True:
             listado_existentes.append(paciente)
             EscribirMensaje(navegador, nombre)
+        else:
             if verificacion==False:
                 listado_inexistentes.append(paciente)
         BorrarCampos(navegador)
