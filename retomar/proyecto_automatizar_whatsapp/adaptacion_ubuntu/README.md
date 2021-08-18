@@ -56,27 +56,31 @@ Creamos el archivo si no existe: `sudo nano /etc/X11/xorg.conf`
 
 Escribimos el siguiente código:
 
-`Section "Device"`
-    `Identifier  "Configured Video Device"`
-    `Driver      "dummy"`
-`EndSection`
 
-`Section "Monitor"`
-    `Identifier  "Configured Monitor"`
-    `HorizSync 31.5-48.5`
-    `VertRefresh 50-70`
-`EndSection`
 
-`Section "Screen"`
-    `Identifier  "Default Screen"`
-    `Monitor     "Configured Monitor"`
-    `Device      "Configured Video Device"`
-    `DefaultDepth 24`
-    `SubSection "Display"`
-    `Depth 24`
-    `Modes "1366x768"`
-    `EndSubSection`
-`EndSection`
+Section "Device"
+    Identifier  "Configured Video Device"
+    Driver      "dummy"
+EndSection
+
+Section "Monitor"
+    Identifier  "Configured Monitor"
+    HorizSync 31.5-48.5
+    VertRefresh 50-70
+EndSection
+
+Section "Screen"
+    Identifier  "Default Screen"
+    Monitor     "Configured Monitor"
+    Device      "Configured Video Device"
+    DefaultDepth 24
+    SubSection "Display"
+    Depth 24
+    Modes "1366x768"
+    EndSubSection
+EndSection
+
+
 
 Entonces es el momento de desactivar el sistema gráfico Wayland **(No se lleva bien con los escritorios remotos).**
 
