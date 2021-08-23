@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox as mb
 import operaciones_db as database
+from datetime import datetime
 
 class Menu():
 
@@ -11,6 +12,9 @@ class Menu():
         self.dias_semana=("Lunes", "Martes", "Miércoles", "Jueves", "Viernes")
         self.dias_contenido=[]
         self.listado_completo=None
+        self.nombre_antiguo=""
+        self.hoy=datetime.now()
+        self.hoy=datetime.strftime(self.hoy, "%d-%m-%Y")
         self.secciones=ttk.Notebook(self.ventana)
         self.secciones.grid(column=0, row=0, sticky="nswe")
         self.frame_ventana_principal=ttk.Frame(self.secciones)
@@ -55,9 +59,11 @@ class Menu():
         frame1=ttk.Frame(self.frame_gestion_menu)
         frame1.grid(column=0, row=0, padx=20, pady=30, rowspan=2)
         frame2=ttk.Frame(self.frame_gestion_menu, borderwidth=1, relief="groove")
-        frame2.grid(column=1, row=0, padx=20, pady=30)
+        frame2.grid(column=1, row=0, padx=20, pady=20, sticky="swe")
+        frame2.columnconfigure(0, weight=1)
+        frame2.columnconfigure(1, weight=1)
         frame3=ttk.Frame(self.frame_gestion_menu, borderwidth=1, relief="groove")
-        frame3.grid(column=1, row=1, padx=20, pady=30)
+        frame3.grid(column=1, row=1, padx=20, pady=20, sticky="nwe")
         titulo_frame1=ttk.Label(frame1, text="Listado de Menús", font=("Arial", 16))
         titulo_frame1.grid(column=0, row=0, pady=(0, 10))
         barra_nav=ttk.Scrollbar(frame1, orient=tk.VERTICAL)
@@ -94,22 +100,27 @@ class Menu():
         ensalada_entrada.grid(column=0, row=2, sticky="e")
         ensalada_etiqueta=ttk.Label(frame3, text="Ensalada", font=("Arial", 10))
         ensalada_etiqueta.grid(column=1, row=2, sticky="w", columnspan=2)
-        self.entrada_dato=tk.StringVar()
-        entrada_menu=ttk.Entry(frame3, width=30, font=("Arial", 12), textvariable=self.entrada_dato)
+        self.nombre_dato=tk.StringVar()
+        entrada_menu=ttk.Entry(frame3, width=30, font=("Arial", 12), textvariable=self.nombre_dato)
         entrada_menu.grid(column=0, row=3, padx=20, pady=20, ipady=5, columnspan=3)
-        self.boton_modificar=ttk.Button(frame3, text="Modificar", width=20, command=self.ModificarMenu)
+        self.boton_buscar=ttk.Button(frame3, text="Buscar", width=20, command=lambda: self.MostrarDatos(self.nombre_dato.get()))
+        self.boton_buscar.grid(column=0, row=4, padx=5, pady=(10, 20), ipady=5)
+        self.boton_modificar=ttk.Button(frame3, text="Modificar", width=20, state="disabled", command=lambda: self.ModificarMenu(self.nombre_dato.get()))
         self.boton_modificar.grid(column=1, row=4, padx=5, pady=(10, 20), ipady=5)
-        boton_eliminar=ttk.Button(frame3, text="Eliminar", width=20, command=self.BorrarMenu)
-        boton_eliminar.grid(column=2, row=4, padx=(5, 10), pady=(10, 20), ipady=5)
+        self.boton_eliminar=ttk.Button(frame3, text="Eliminar", width=20, state="disabled", command=self.BorrarMenu)
+        self.boton_eliminar.grid(column=2, row=4, padx=(5, 10), pady=(10, 20), ipady=5)
 
-    #HAY QUE CAMBIAR TODA LA RELACION DE NOMBRES PARA QUE VUELVA A TENER COHERENCIA EL PROGRAMA
     def AgregarMenu(self):
-        menu=self.entrada_dato.get()
-        acompanamiento=int(self.acompanamiento_dato.get())
-        ensalada=int(self.ensalada_dato.get())
+        menu=self.creacion_nombre_dato.get()
+        acompanamiento=int(self.creacion_acompanamiento_dato.get())
+        ensalada=int(self.creacion_ensalada_dato.get())
         repetido=self.Repetido(menu)
         if repetido==0:
             database.AgregarMenu(menu, acompanamiento, ensalada)
+            mb.showinfo("INFORMACIÓN", "Menú creado.")
+            self.creacion_nombre_dato.set("")
+            self.creacion_acompanamiento_dato.set(0)
+            self.creacion_ensalada_dato.set(0)
         else:
             mb.showerror("ERROR", "El artículo ya existe.")
         self.ActualizarListado()
@@ -122,48 +133,79 @@ class Menu():
             self.listado_menu.insert(tk.END, fila)
     
     def BorrarMenu(self):
-        menu=(str(self.entrada_dato.get()), )
-        respuesta=mb.askyesno("AVISO", "¿Desea eliminar este menú?")
-        if respuesta:
-            database.BorrarMenu(menu)
+        menu=self.nombre_dato.get()
+        datos=self.BuscarMenu(menu)
+        if type(datos) is tuple:
+            respuesta=mb.askyesno("AVISO", "¿Desea eliminar este menú?")
+            if respuesta:
+                database.BorrarMenu(menu)
+                self.nombre_dato.set("")
+                self.acompanamiento_dato.set(0)
+                self.ensalada_dato.set(0)
+        else:
+            mb.showerror("ERROR", "El menu no existe.")
         self.ActualizarListado()
 
     def SeleccionCursor(self, evento):
         if len(self.listado_menu.curselection())>0:
             menu=self.listado_menu.get(self.listado_menu.curselection()[0])
-            datos=self.BuscarMenu(menu)
+            self.nombre_antiguo=menu
+            self.MostrarDatos(menu)
+
+    def ModificarMenu(self, menu):
+        if menu!="":
+            datos=self.BuscarMenu(self.nombre_antiguo)
             idmenu, plato, acompanamiento, ensalada=datos
-            self.entrada_dato.set(plato)
-            self.acompanamiento_dato.set(acompanamiento)
-            self.ensalada_dato.set(ensalada)
+            menu_antiguo=plato
+            menu_nuevo=menu
+            repetido=self.Repetido(menu_nuevo)
+            verificar=False
+            if menu_nuevo==menu_antiguo:
+                verificar=True
+            else:
+                if repetido<1:
+                    verificar=True
+            if verificar:
+                database.ModificarMenu(menu_nuevo, self.acompanamiento_dato.get(), self.ensalada_dato.get(), menu_antiguo)
+                self.nombre_antiguo=menu_nuevo
+            else:
+                mb.showerror("ERROR", "El artículo ya existe")
+            self.ActualizarListado()
 
-
-    
     def BuscarMenu(self, menu):
         datos=database.BuscarIndividual(menu)
         return datos
 
-
-    def ModificarMenu(self):
-        menu=self.listado_menu.get(self.listado_menu.curselection()[0])
+    def MostrarDatos(self, menu):
         datos=self.BuscarMenu(menu)
-        idmenu, plato, acompanamiento, ensalada=datos
-        menu_antiguo=plato
-        menu_nuevo=self.entrada_dato.get()
-        repetido=self.Repetido(menu_nuevo)
-        if repetido<=1:
-            database.ModificarMenu(menu_nuevo, self.acompanamiento_dato.get(), self.ensalada_dato.get(), menu_antiguo)
+        if type(datos) is tuple:
+            idmenu, plato, acompanamiento, ensalada=datos
+            self.nombre_dato.set(plato)
+            self.acompanamiento_dato.set(acompanamiento)
+            self.ensalada_dato.set(ensalada)
+            self.boton_modificar.configure(state="enabled")
+            self.boton_eliminar.configure(state="enabled")
+            self.nombre_antiguo=plato
         else:
-            mb.showerror("ERROR", "El artículo ya existe")
-        self.ActualizarListado()
+            self.acompanamiento_dato.set(0)
+            self.ensalada_dato.set(0)
+            self.boton_modificar.configure(state="disabled")
+            self.boton_eliminar.configure(state="disabled")
+            if datos==None:
+                mb.showerror("ERROR", "El menú no existe.")
 
     def Repetido(self, menu):
         similitud=0
         for x in range(len(self.listado_completo)):
-            for i in range(len(self.listado_completo)):
+            for i in range(len(self.listado_completo[x])):
                 if menu==self.listado_completo[x][i]:
                     similitud+=1
         return similitud
+
+    def InsertarMenuDia(self):
+        for x in range(len(self.listado_completo)):
+            pass
+
 
 
 
