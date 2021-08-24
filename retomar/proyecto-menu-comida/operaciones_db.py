@@ -9,10 +9,10 @@ def Conexion():
     conexion=sqlite.connect(os.path.join(db, "menus.db"))
     return conexion
 
-def AgregarMenu(menu, acompanamiento, ensalada):
+def AgregarMenu(menu, categoria, acompanamiento, ensalada):
     conexion=Conexion()
-    datos=(menu, acompanamiento, ensalada)
-    consulta="INSERT INTO menu (plato, acompanamiento, ensalada) VALUES (?, ?, ?)"
+    datos=(menu, categoria, acompanamiento, ensalada)
+    consulta="INSERT INTO menu (plato, categoria, acompanamiento, ensalada) VALUES (?, ?, ?, ?)"
     cursor=conexion.cursor()
     cursor.execute(consulta, datos)
     conexion.commit()
@@ -46,10 +46,10 @@ def BorrarMenu(menu):
     conexion.close()
 
 
-def ModificarMenu(menu, acompanamiento, ensalada, menu_antiguo):
+def ModificarMenu(menu, categoria, acompanamiento, ensalada, menu_antiguo):
     conexion=Conexion()
-    datos=(menu, acompanamiento, ensalada, menu_antiguo)
-    consulta="UPDATE menu SET plato=?, acompanamiento=?, ensalada=? WHERE plato=?"
+    datos=(menu, categoria, acompanamiento, ensalada, menu_antiguo)
+    consulta="UPDATE menu SET plato=?, categoria=?, acompanamiento=?, ensalada=? WHERE plato=?"
     cursor=conexion.cursor()
     cursor.execute(consulta, datos)
     conexion.commit()
@@ -63,13 +63,13 @@ def AgregarMenuDia(idmenu, dia, fecha):
     cursor.execute(consulta, datos)
     conexion.commit()
     conexion.close()
-    
+
 
 
 """
 conexion=sqlite.connect(os.path.join(db, "menus.db"))
 cursor=conexion.cursor()
-cursor.execute("CREATE TABLE menu (idmenu INTEGER PRIMARY KEY AUTOINCREMENT, plato TEXT, acompanamiento INTEGER, ensalada INTEGER)")
+cursor.execute("CREATE TABLE menu (idmenu INTEGER PRIMARY KEY AUTOINCREMENT, plato TEXT, categoria TEXT, acompanamiento TEXT, ensalada TEXT)")
 cursor.execute("CREATE TABLE semana (id INTEGER PRIMARY KEY AUTOINCREMENT, idmenu INTEGER, dia TEXT, fecha DATETIME, FOREIGN KEY(idmenu) REFERENCES menu(idmenu))")
 conexion.commit()
 conexion.close()

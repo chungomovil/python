@@ -54,7 +54,7 @@ def EscribirMensaje(navegador, nombre):
     mensaje="Estamos a su disposición."
     campo[1].send_keys(mensaje)
     campo[1].send_keys(Keys.ENTER)
-    time.sleep(5)
+    time.sleep(10)
 
 def CerrarNavegador(navegador):
     navegador.quit()
