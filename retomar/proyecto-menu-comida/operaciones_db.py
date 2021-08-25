@@ -55,12 +55,30 @@ def ModificarMenu(menu, categoria, acompanamiento, ensalada, menu_antiguo):
     conexion.commit()
     conexion.close()
 
-def AgregarMenuDia(idmenu, dia, fecha):
+def AgregarMenuDia(idmenu, plato, dia, fecha):
     conexion=Conexion()
-    datos=(idmenu, dia, fecha)
-    consulta="INSERT INTO semana (idmenu, dia, fecha) VALUES (?, ? ,?)"
+    datos=(idmenu, plato, dia, fecha)
+    consulta="INSERT INTO semana (idmenu, plato, dia, fecha) VALUES (?, ?, ? ,?)"
     cursor=conexion.cursor()
     cursor.execute(consulta, datos)
+    conexion.commit()
+    conexion.close()
+
+def ListaMenuDia():
+    conexion=Conexion()
+    cursor=conexion.cursor()
+    cursor.execute("SELECT * FROM semana WHERE fecha=(SELECT MAX(fecha) FROM semana) ORDER BY id ASC")
+    listado_recientes=cursor.fetchall()
+    cursor.execute("SELECT * FROM semana WHERE fecha=(SELECT MIN(fecha) FROM semana) ORDER BY id ASC")
+    listado_antiguos=cursor.fetchall()
+    conexion.close()
+    return (listado_recientes, listado_antiguos)
+
+def BorrarMenuDia(fecha):
+    fecha=(fecha, )
+    conexion=Conexion()
+    cursor=conexion.cursor()
+    cursor.execute("DELETE FROM semana WHERE fecha=?", (fecha))
     conexion.commit()
     conexion.close()
 

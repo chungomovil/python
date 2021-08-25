@@ -3,13 +3,15 @@ from tkinter import ttk
 from tkinter import messagebox as mb
 import operaciones_db as database
 from datetime import datetime
+import random
+import time
 
 class Menu():
 
     def __init__(self):
         self.ventana=tk.Tk()
         self.ventana.title("MENU SEMANAL")
-        self.dias_semana=("Lunes", "Martes", "Miércoles", "Jueves", "Viernes")
+        self.dias_semana=("lunes", "martes", "miércoles", "jueves", "viernes")
         self.dias_contenido=[]
         self.listado_completo=[]
         self.listado_plato_principal=[]
@@ -31,8 +33,9 @@ class Menu():
         self.ContenidoVentanaPrincipal()
         self.ContenidoVentanaGestionMenu()
         self.ActualizarListado()
+        self.MostrarMenuDia()
         self.listado_menu.bind("<ButtonRelease-1>", self.SeleccionCursor)
-        self.ventana.minsize(800, 600)
+        self.ventana.minsize(1000, 600)
         self.ventana.mainloop()
     
     def ContenidoVentanaPrincipal(self):
@@ -49,14 +52,16 @@ class Menu():
         boton_actual=ttk.Button(frame1, text="Actual", width=20)
         boton_actual.grid(column=1, row=1, padx=5, ipady=5)
         for x in range(len(self.dias_semana)):
-            dias_encabezado=ttk.Label(frame2, text=self.dias_semana[x], anchor="center", font=("Arial", 16), borderwidth=1, relief="solid")
+            dias_encabezado=ttk.Label(frame2, text=self.dias_semana[x].capitalize(), anchor="center", font=("Arial", 16), borderwidth=1, relief="solid", background="#5DADE2")
             dias_encabezado.grid(column=x, row=0, sticky="we")
-            dias_contenido=ttk.Label(frame2, text="", font=("Arial", 14), borderwidth=1, relief="solid")
-            dias_contenido.grid(column=x, row=3, sticky="we")
+            dias_contenido=ttk.Label(frame2, text="", anchor="n", font=("Arial", 12), borderwidth=1, relief="solid", background="#D6EAF8")
+            dias_contenido.grid(column=x, row=3, ipadx=5, sticky="nswe")
             self.dias_contenido.append(dias_contenido)
             frame2.columnconfigure(x, weight=1)
-        boton_generar_nuevo=ttk.Button(frame3, text="Generar Nuevo", width=20)
-        boton_generar_nuevo.grid(column=0, row=0, ipady=5)
+        self.boton_generar_nuevo=ttk.Button(frame3, text="Generar Nuevo", width=20, command=self.SeleccionarMenuDia)
+        self.boton_generar_nuevo.grid(column=0, row=0, padx=5, ipady=5)
+        self.boton_refrescar=ttk.Button(frame3, text="Refrescar", width=20, command=self.MostrarMenuDia)
+        self.boton_refrescar.grid(column=1, row=0, padx=5, ipady=5)
             
     def ContenidoVentanaGestionMenu(self):
         frame1=ttk.Frame(self.frame_gestion_menu)
@@ -109,7 +114,7 @@ class Menu():
         admision_ensalada_etiqueta=ttk.Label(frame2, text="Ensalada", font=("Arial", 10))
         admision_ensalada_etiqueta.grid(column=3, row=3, pady=2, sticky="w")
         self.creacion_nombre_dato=tk.StringVar()
-        creacion_nombre_entrada=ttk.Entry(frame2, width=30, font=("Arial", 12), textvariable=self.creacion_nombre_dato)
+        creacion_nombre_entrada=ttk.Entry(frame2, width=40, font=("Arial", 12), textvariable=self.creacion_nombre_dato)
         creacion_nombre_entrada.grid(column=0, row=5, padx=20, pady=10, ipady=5, columnspan=4)
         boton_guardar=ttk.Button(frame2, text="Crear Nuevo", width=20, command=self.AgregarMenu)
         boton_guardar.grid(column=0, row=6, padx=10, pady=(10, 20), ipady=5, columnspan=4)
@@ -148,7 +153,7 @@ class Menu():
         admision_ensalada_etiqueta=ttk.Label(frame3, text="Ensalada", font=("Arial", 10))
         admision_ensalada_etiqueta.grid(column=3, row=3, pady=2, sticky="w")
         self.mod_nombre_dato=tk.StringVar()
-        nombre_dato_entrada=ttk.Entry(frame3, width=30, font=("Arial", 12), textvariable=self.mod_nombre_dato)
+        nombre_dato_entrada=ttk.Entry(frame3, width=40, font=("Arial", 12), textvariable=self.mod_nombre_dato)
         nombre_dato_entrada.grid(column=0, row=5, padx=20, pady=10, ipady=5, columnspan=4)
         self.boton_buscar=ttk.Button(frame3, text="Buscar", width=20, command=lambda: self.MostrarDatos(self.mod_nombre_dato.get()))
         self.boton_buscar.grid(column=0, row=6, padx=5, pady=10, ipady=5, columnspan=4)
@@ -159,6 +164,7 @@ class Menu():
         self.mod_admision_acompanamiento_dato.set("No")
         self.mod_admision_ensalada_dato.set("No")
 
+#<-----METODOS DE LA VENTANA DE GESTION----->
     def AgregarMenu(self):
         menu=self.creacion_nombre_dato.get().lower()
         categoria=self.creacion_categoria_dato.get()
@@ -207,6 +213,7 @@ class Menu():
         else:
             mb.showerror("ERROR", "El menu no existe.")
         self.ActualizarListado()
+        self.MostrarMenuDia()
 
     def SeleccionCursor(self, evento):
         if len(self.listado_menu.curselection())>0:
@@ -233,6 +240,7 @@ class Menu():
             else:
                 mb.showerror("ERROR", "El artículo ya existe")
             self.ActualizarListado()
+            self.MostrarMenuDia()
 
     def BuscarMenu(self, menu):
         datos=database.BuscarIndividual(menu)
@@ -288,6 +296,7 @@ class Menu():
                     similitud+=1
         return similitud
 
+#<-----METODOS DE LA VENTANA PRINCIPAL----->
     def SepararTipos(self):
         self.listado_plato_principal=[]
         self.listado_acompanamiento=[]
@@ -299,8 +308,74 @@ class Menu():
                 self.listado_acompanamiento.append(self.listado_completo[x])
             elif self.listado_completo[x][2]=="Ensalada":
                 self.listado_ensalada.append(self.listado_completo[x])
-        
     
+    def SeleccionarMenuDia(self):
+        listado_recientes, listado_antiguos=database.ListaMenuDia()
+        print(listado_recientes)
+        if len(listado_recientes)>0 and len(listado_antiguos)>0:
+            if listado_recientes[0][4]==self.hoy:
+                database.BorrarMenuDia(self.hoy)
+        platos_disponibles=self.listado_plato_principal
+        for x in range(5):
+            eleccion_plato=random.randint(0, len(platos_disponibles)-1)
+            eleccion_acompanamiento=random.randint(0, len(self.listado_acompanamiento)-1)
+            eleccion_ensalada=random.randint(0, len(self.listado_ensalada)-1)
+            database.AgregarMenuDia(platos_disponibles[eleccion_plato][0], platos_disponibles[eleccion_plato][1], self.dias_semana[x], self.hoy)
+            if self.listado_plato_principal[eleccion_plato][3]=="Si" and self.listado_plato_principal[eleccion_plato][4]=="Si":
+                database.AgregarMenuDia(self.listado_acompanamiento[eleccion_acompanamiento][0], self.listado_acompanamiento[eleccion_acompanamiento][1], self.dias_semana[x], self.hoy)
+                database.AgregarMenuDia(self.listado_ensalada[eleccion_ensalada][0], self.listado_ensalada[eleccion_ensalada][1], self.dias_semana[x], self.hoy)
+            elif self.listado_plato_principal[eleccion_plato][3]=="Si":
+                database.AgregarMenuDia(self.listado_acompanamiento[eleccion_acompanamiento][0], self.listado_acompanamiento[eleccion_acompanamiento][1], self.dias_semana[x], self.hoy)
+            elif self.listado_plato_principal[eleccion_plato][4]=="Si":
+                database.AgregarMenuDia(self.listado_ensalada[eleccion_ensalada][0], self.listado_ensalada[eleccion_ensalada][1], self.dias_semana[x], self.hoy)
+            del platos_disponibles[eleccion_plato]
+        self.MostrarMenuDia()
+        self.boton_generar_nuevo.configure(state="disabled")
+        self.boton_refrescar.configure(state="disabled")
+        self.ventana.update()
+        self.ventana.after(2000, self.DesactivarBoton)
+    
+    #CAMBIAR LA FORMA DE LA BD PARA QUE MUESTRE EL PRODUCTO ACTUALIZADO (EMPLEAR LA CLAVE FORANEA)
+    def MostrarMenuDia(self):
+        listado_recientes, listado_antiguos=database.ListaMenuDia()
+        for x in range(len(self.dias_contenido)):
+            cadena_completa="\n"
+            for i in range(len(listado_recientes)):
+                if listado_recientes[i][3]==self.dias_semana[x]:
+                    plato=""
+                    for k in range(len(self.listado_completo)):
+                        if listado_recientes[i][1]==self.listado_completo[k][0]:
+                            plato=self.listado_completo[k][1]
+                    #cadena=cadena+" > "+listado_recientes[i][2]+"\n\n"
+                    cadena_completa=cadena_completa+self.FormateoCadena(str("> "+plato))+"\n\n"
+            self.dias_contenido[x].configure(text=cadena_completa)
+        self.boton_generar_nuevo.configure(state="disabled")
+        self.boton_refrescar.configure(state="disabled")
+        self.ventana.update()
+        self.ventana.after(2000, self.DesactivarBoton)
+    
+    def FormateoCadena(self, cadena):
+        longitud=15
+        if len(cadena)>longitud:
+            capturar_espacio=0
+            pos=longitud
+            nuevacadena=""
+            while capturar_espacio!=-1:               
+                capturar_espacio=cadena[pos:].find(" ")
+                if capturar_espacio!=-1:
+                    nuevacadena=nuevacadena+cadena[pos-longitud:pos+capturar_espacio]+"\n  "
+                else:
+                    nuevacadena=nuevacadena+cadena[pos-longitud:]
+                pos=pos+longitud+capturar_espacio
+            return nuevacadena
+        else:
+            return cadena
+
+    def DesactivarBoton(self):
+        self.boton_generar_nuevo.configure(state="enabled")
+        self.boton_refrescar.configure(state="enabled")
+
+
 
 
 
