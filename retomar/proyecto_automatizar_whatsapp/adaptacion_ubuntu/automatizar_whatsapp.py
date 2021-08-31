@@ -26,18 +26,24 @@ def BorrarCampos(navegador):
     for x in range(len(campos)):
         campos[x].clear()
 
-def BuscarNumero(navegador, telefono):
+def BuscarNumero(navegador, telefono, contador=0, sleep=0):
     global excepcion
+    busqueda=False
     try:
-        campo=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements_by_class_name("_13NKt"))
+        boton_busqueda=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements_by_class_name("_28-cz"))
+        boton_busqueda[0].click()
+        time.sleep(sleep)
+        campo=navegador.find_elements_by_class_name("_13NKt")
         campo[0].send_keys(telefono)
         time.sleep(10)
         campo[0].send_keys(Keys.ENTER)
         verificacion=navegador.find_elements_by_class_name("_1JFry")
         if len(verificacion)==0:
-            return True
+            busqueda=True
         else:
-            return False
+            if contador==0:
+                BuscarNumero(navegador, telefono, 1, 10)
+        return busqueda
     except Error as mensaje:
         excepcion=str(type(mensaje).__name__)
         return "ERROR"

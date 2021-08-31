@@ -36,30 +36,43 @@ def BorrarCampos(navegador):
     for x in range(len(campos)):
         campos[x].clear()
 
-#Funcion para buscar los contactos por su número de teléfono
-def BuscarNumero(navegador, telefono):
+#Funcion recursiva para buscar los contactos por su número de teléfono
+def BuscarNumero(navegador, telefono, contador=0, sleep=0):
     #Indicamos a python que se usará la variable global de excepcion (de lo contrario no sabrá si es local o global)
     global excepcion
+    busqueda=False
     #Alboritmo a chequear
     try:
-        #Almacenamos en una variable la etiqueta del campo para instroducir el número telefónico
+        #Almacenamos el boton de búsqueda en una variable
         #"WebDriverWait" es una funcion de modulo webdriver que pausa la ejecución del programa hasta que no esté disponible el valor que se la ha pasado por la funcion "lambda"
-        campo=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements_by_class_name("_13NKt")) #El atributo "timeout" indica el tiempo límite de la pausa, mientras que "pool_frequency"  es la frecuencia en segundos con la que buscará el valor
+        boton_busqueda=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements_by_class_name("_28-cz")) #El atributo "timeout" indica el tiempo límite de la pausa, mientras que "pool_frequency"  es la frecuencia en segundos con la que buscará el valor
+        #Damos click al botón de búsqueda (es el mismo botón que retroceder)
+        boton_busqueda[0].click()
+        #Pausamos un tiempo el programa para que el programa procese bien la introduccion de datos entre teléfono y teléfono
+        time.sleep(sleep)
+        #Almacenamos en una variable la etiqueta del campo para instroducir el número telefónico
+        campo=navegador.find_elements_by_class_name("_13NKt") 
         #Escribimos el teléfono en el campo (recordar que al tener un atributo de clase y no id en HTML, pueden haber varios)
         campo[0].send_keys(telefono)
         #Tiempo que se pausará la ejecución (para dar margen a encontrar el teléfono)
-        time.sleep(5)
+        time.sleep(10)
         #Presionamos la tecla "ENTER"
         campo[0].send_keys(Keys.ENTER)
         #Verificamos que el contacto existe
         verificacion=navegador.find_elements_by_class_name("_1JFry")
+        #Si existe cambiamos la variable a True
         if len(verificacion)==0:
-            return True
+            busqueda=True
         else:
-            return False
-    #En caso de no haberse cargado la pagina
+            #Si es el primer intento de búsqueda lanzamos nuevamente la función para buscarlo SOLO una vez más
+            if contador==0:
+                BuscarNumero(navegador, telefono, 1, 10)
+        #Retornamos el resultado
+        #OJO! Recordar que en las funciones recursivas si ponemos los retornos dentro de condiciones hará que retorne "None"
+        return busqueda
+    #En caso de no haberse cargado la página
     except Error as mensaje:
-        #Generamos el nombre de la excepcion y la guardamos en su variable correspondiente
+        #Generamos el nombre de la excepción y la guardamos en su variable correspondiente
         excepcion=str(type(mensaje).__name__)
         #Retornamos
         return "ERROR"
