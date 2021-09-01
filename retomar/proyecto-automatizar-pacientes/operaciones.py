@@ -24,7 +24,7 @@ class Operaciones:
     #Metodo para restar a la fecha actual dos meses
     def RangosFecha(self):
         hoy=date.today()
-        fecha_limite=hoy+timedelta(days=-60) #Para restar entre fechas (el maximo rango es weeks, no hay months ni years)
+        fecha_limite=hoy+timedelta(days=-30) #Para restar entre fechas (el maximo rango es weeks, no hay months ni years)
         #Retornamos fecha
         return fecha_limite
 
@@ -42,7 +42,7 @@ class Operaciones:
         #Importamos la fecha limite
         fecha_limite=self.RangosFecha()
         #Creamos la consulta para extraer las asistencias
-        consultas_recientes="SELECT idpaciente, dni, nombres, apellidos, cat_seguro, cod_seguro, obs_seguro, aviso, telefono, movil, MAX(timestamp) FROM consulta NATURAL JOIN paciente WHERE timestamp>=%s AND (cat_seguro='Adeslas' OR cat_seguro='Dkv') GROUP BY idpaciente ORDER BY MAX(timestamp) ASC"
+        consultas_recientes="SELECT idpaciente, dni, nombres, apellidos, cat_seguro, cod_seguro, obs_seguro, aviso, telefono, movil, MAX(timestamp) FROM consulta NATURAL JOIN paciente WHERE timestamp>=%s AND motivosconsulta!='mejora' AND (cat_seguro='Adeslas' OR cat_seguro='Dkv') GROUP BY idpaciente ORDER BY MAX(timestamp) ASC"
         cursor=conexion.cursor()
         #Ejecutamos la consulta con la fecha establecida
         cursor.execute(consultas_recientes, (fecha_limite, ))
