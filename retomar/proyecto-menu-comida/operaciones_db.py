@@ -45,7 +45,6 @@ def BorrarMenu(menu):
     conexion.commit()
     conexion.close()
 
-
 def ModificarMenu(menu, categoria, acompanamiento, ensalada, menu_antiguo):
     conexion=Conexion()
     datos=(menu, categoria, acompanamiento, ensalada, menu_antiguo)
@@ -64,6 +63,13 @@ def AgregarMenuDia(idmenu, plato, dia, fecha):
     conexion.commit()
     conexion.close()
 
+def ListaFechasMenuDia():
+    conexion=Conexion()
+    cursor=conexion.cursor()
+    cursor.execute("SELECT fecha FROM semana GROUP BY fecha ORDER BY fecha ASC")
+    fechas=cursor.fetchall()
+    return fechas
+
 def ListaMenuDia():
     conexion=Conexion()
     cursor=conexion.cursor()
@@ -81,14 +87,3 @@ def BorrarMenuDia(fecha):
     cursor.execute("DELETE FROM semana WHERE fecha=?", (fecha))
     conexion.commit()
     conexion.close()
-
-
-
-"""
-conexion=sqlite.connect(os.path.join(db, "menus.db"))
-cursor=conexion.cursor()
-cursor.execute("CREATE TABLE menu (idmenu INTEGER PRIMARY KEY AUTOINCREMENT, plato TEXT, categoria TEXT, acompanamiento TEXT, ensalada TEXT)")
-cursor.execute("CREATE TABLE semana (id INTEGER PRIMARY KEY AUTOINCREMENT, idmenu INTEGER, dia TEXT, fecha DATETIME, FOREIGN KEY(idmenu) REFERENCES menu(idmenu))")
-conexion.commit()
-conexion.close()
-"""
