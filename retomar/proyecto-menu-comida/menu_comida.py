@@ -217,11 +217,7 @@ class Menu():
             mb.showerror("ERROR", "El menu no existe.")
         self.ActualizarListado()
         self.ActualizarMenuDia()
-<<<<<<< HEAD
         self.MostrarMenuDia(self.listado_recientes)
-=======
-        self.MostrarMenuDia()
->>>>>>> 05bf390513c61316e34651372675e4215fa81fa7
 
     def SeleccionCursor(self, evento):
         if len(self.listado_menu.curselection())>0:
@@ -249,11 +245,7 @@ class Menu():
                 mb.showerror("ERROR", "El artículo ya existe")
             self.ActualizarListado()
             self.ActualizarMenuDia()
-<<<<<<< HEAD
             self.MostrarMenuDia(self.listado_recientes)
-=======
-            self.MostrarMenuDia()
->>>>>>> 05bf390513c61316e34651372675e4215fa81fa7
 
     def BuscarMenu(self, menu):
         datos=database.BuscarIndividual(menu)
