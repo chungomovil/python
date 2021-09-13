@@ -158,7 +158,7 @@ class Operaciones:
         return consultas_recientes_listado
 
     #Metodo para filtrar la peticion del usuario
-    def FiltrarSeguro(self, adeslas, dkv, listado_recientes):
+    def FiltrarSeguro(self, listado_recientes):
         #Importamos la lista retornada por la funcion anterior
         consultas_recientes_listado=listado_recientes
         total_adeslas=[]
@@ -173,6 +173,9 @@ class Operaciones:
             #Agregamos a una lista los de dkv
             else:
                 total_dkv.append(consultas_recientes_listado[x])
+        return (total_adeslas, total_dkv)
+    
+    """def ElegirPacientes(self, adeslas, dkv):
         #Filtramos que la peticion del usuario no sea superior a los existentes
         if adeslas>len(total_adeslas) or dkv>len(total_dkv):
             #Retornamos si alguno es superior, finalizando aqui la operacion
@@ -189,7 +192,7 @@ class Operaciones:
                 elegidos_dkv.append(total_dkv[eleccion])
                 total_dkv.pop(eleccion)
         #Retornamos ambas listas con los elegidos aleatoriamente
-        return (elegidos_adeslas, elegidos_dkv)
+        return (elegidos_adeslas, elegidos_dkv)"""
 
     #Metodo para insertar en la tabla cita los pacientes
     def Insertar(self, lista_final_recientes, fecha):
