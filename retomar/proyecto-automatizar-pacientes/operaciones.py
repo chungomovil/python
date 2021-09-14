@@ -24,7 +24,7 @@ class Operaciones:
     #Metodo para restar a la fecha actual dos meses
     def RangosFecha(self):
         hoy=date.today()
-        fecha_limite=hoy+timedelta(days=-30) #Para restar entre fechas (el maximo rango es weeks, no hay months ni years)
+        fecha_limite=hoy+timedelta(days=-45) #Para restar entre fechas (el maximo rango es weeks, no hay months ni years)
         #Retornamos fecha
         return fecha_limite
 
@@ -157,14 +157,13 @@ class Operaciones:
         #Retornamos el listado de recientes final y que tengan menos de 3 asistencias hasta la fecha actual
         return consultas_recientes_listado
 
-    #Metodo para filtrar la peticion del usuario
+    #Metodo para filtrar pacientes por seguro
     def FiltrarSeguro(self, listado_recientes):
         #Importamos la lista retornada por la funcion anterior
         consultas_recientes_listado=listado_recientes
+        #Creamos dos listas para ir separando los pacientes por seguro
         total_adeslas=[]
-        elegidos_adeslas=[]
         total_dkv=[]
-        elegidos_dkv=[]
         #Recorremos la lista
         for x in range(len(consultas_recientes_listado)):
             #Agregamos a una lista los de adeslas
@@ -173,43 +172,44 @@ class Operaciones:
             #Agregamos a una lista los de dkv
             else:
                 total_dkv.append(consultas_recientes_listado[x])
+        #Retornamos ambas listas
         return (total_adeslas, total_dkv)
     
-    """def ElegirPacientes(self, adeslas, dkv):
-        #Filtramos que la peticion del usuario no sea superior a los existentes
-        if adeslas>len(total_adeslas) or dkv>len(total_dkv):
-            #Retornamos si alguno es superior, finalizando aqui la operacion
-            return False
-        else:
-            #Elegimos aleatoriamente a los pacientes de adeslas (la cantidad varia segun la peticion del usuario)
-            for x in range(adeslas):
-                eleccion=random.randint(0, len(total_adeslas)-1)
-                elegidos_adeslas.append(total_adeslas[eleccion])
-                total_adeslas.pop(eleccion)
-            #Hacemos lo mismo con los pacientes de dkv
-            for x in range(dkv):
-                eleccion=random.randint(0, len(total_dkv)-1)
-                elegidos_dkv.append(total_dkv[eleccion])
-                total_dkv.pop(eleccion)
+    #Metodo para elegir aleatoriamente la cantidad de pacientes solicitada de cada seguro
+    def ElegirPacientes(self, lista_adeslas, lista_dkv, cantidad_adeslas, cantidad_dkv):
+        #Creamos dos listas para ir separando los pacientes elegidos por seguro
+        elegidos_adeslas=[]
+        elegidos_dkv=[]
+        #Recorremos la lista de pacientes de adeslas
+        for x in range(cantidad_adeslas):
+            #Elegimos un numero al azar (representando la posición de la lista)
+            eleccion=random.randint(0, len(lista_adeslas)-1)
+            #Agregamos a la lista dicha elección
+            elegidos_adeslas.append(lista_adeslas[eleccion])
+            #Eliminamos de la lista principal esta eleccion para que no se repita
+            lista_adeslas.pop(eleccion)
+        #Hacemos lo mismo con los pacientes de dkv
+        for x in range(cantidad_dkv):
+            eleccion=random.randint(0, len(lista_dkv)-1)
+            elegidos_dkv.append(lista_dkv[eleccion])
+            lista_dkv.pop(eleccion)
         #Retornamos ambas listas con los elegidos aleatoriamente
-        return (elegidos_adeslas, elegidos_dkv)"""
+        return (elegidos_adeslas, elegidos_dkv)
 
     #Metodo para insertar en la tabla cita los pacientes
-    def Insertar(self, lista_final_recientes, fecha):
-        #Seperamos los pacientes de ambos seguros (unicamente para tener mejor orden)
-        lista_adeslas, lista_dkv= lista_final_recientes[0], lista_final_recientes[1]
+    def Insertar(self, elegidos_adeslas, elegidos_dkv, fecha):
         #Conectamos con la BD
         conexion=self.AbrirConexion()
         cursor=conexion.cursor()
         #Recorremos las listas para insertar los campos en la BD
-        for idpaciente, dni, nombre, apellido, seguro, delegacion, obs, aviso, telefono, ultimaconsulta, contador in lista_adeslas:
+        for idpaciente, dni, nombre, apellido, seguro, delegacion, obs, aviso, telefono, ultimaconsulta, contador in elegidos_adeslas:
             #Creamos la consulta de insercion de datos
             sql="INSERT INTO cita (idpaciente, fecha_hora, centro, obs_seguro, lopd, motivo, seguro, telefono, dni, aviso, nombres, apellidos, profesional) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             #Establecemos los valores que se insertaran (el campo 'fecha' lo recibimos desde la interfaz visual ya formateado)
             datos=(idpaciente, fecha, "Tegueste", obs, "1", "+", seguro, telefono, dni, aviso, nombre, apellido, "Dr. Rogelio")
             #Ejecutamos la consulta
             cursor.execute(sql, datos)
-        for idpaciente, dni, nombre, apellido, seguro, delegacion, obs, aviso, telefono, ultimaconsulta, contador in lista_dkv:
+        for idpaciente, dni, nombre, apellido, seguro, delegacion, obs, aviso, telefono, ultimaconsulta, contador in elegidos_dkv:
             sql="INSERT INTO cita (idpaciente, fecha_hora, centro, obs_seguro, lopd, motivo, seguro, telefono, dni, aviso, nombres, apellidos, profesional) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             datos=(idpaciente, fecha, "Tegueste", obs, "1", "+", seguro, telefono, dni, aviso, nombre, apellido, "Dr. Rogelio")
             cursor.execute(sql, datos)
