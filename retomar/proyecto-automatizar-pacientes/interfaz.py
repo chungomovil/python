@@ -1,3 +1,4 @@
+#<---Version: 2.0--->
 #Importamos modulos necesarios
 import tkinter as tk
 from tkinter import ttk
@@ -19,7 +20,8 @@ except NameError:
     ruta=os.path.dirname(sys.argv[0])
 #Nos situamos en la carpeta imagenes
 finally:
-    tema_ruta=str(ruta)+"\\tema\\arc.tcl"
+    tema_ruta=str(ruta)+"\\archivos\\tema\\arc.tcl"
+    imagenes_ruta=str(ruta)+"\\archivos\\imagenes"
 
 #Creamos la clase
 class Aplicacion:
@@ -39,6 +41,8 @@ class Aplicacion:
         tema=ttk.Style(self.ventana)
         self.ventana.call("source", tema_ruta)
         tema.theme_use("arc")
+        #Indicamos la ruta de la imagen
+        self.logo=tk.PhotoImage(file=os.path.join(imagenes_ruta, "patient.png"))
         #Creamos el menu
         menubar=tk.Menu(self.ventana)
         self.ventana.configure(menu=menubar)
@@ -46,6 +50,8 @@ class Aplicacion:
         opciones.add_command(label="SALIR", command=self.Salir)
         menubar.add_cascade(label="Opciones", menu=opciones)
         #Seccion de los estilos de algunos widgets
+        self.estilo_frames_global=ttk.Style(self.ventana)
+        self.estilo_frames_global.configure("TFrame", background="#f5f6f8")
         self.estilo_etiquetas_global=ttk.Style(self.ventana)
         self.estilo_etiquetas_global.configure("TLabel", font=("Arial", 12))
         self.estilo_etiqueta_seguros=ttk.Style(self.ventana)
@@ -55,7 +61,7 @@ class Aplicacion:
         self.estilo_spinbox_global=ttk.Style(self.ventana)
         self.estilo_spinbox_global.configure("TSpinbox", arrowsize=15)
         #Creamos los distintos Frames
-        self.frame1=tk.Frame(self.ventana)
+        self.frame1=ttk.Frame(self.ventana)
         self.frame1.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         #grid_columconfigure se emplea para que las celdas tengan el mismo ancho
         self.frame1.grid_columnconfigure(0, weight=1)
@@ -69,7 +75,7 @@ class Aplicacion:
         self.frame3.grid_columnconfigure(0, weight=1, uniform="grupo")
         self.frame3.grid_columnconfigure(1, weight=1, uniform="grupo")
         self.frame4=ttk.Frame(self.ventana)
-        self.frame4.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+        self.frame4.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10)
         #Llamamos a los metodos necesarios
         self.Header()
         self.FormularioSeguros()
@@ -79,20 +85,22 @@ class Aplicacion:
         #Despues que la ventana termine de iniciar su mainloop procedera a ejecutar esta funcion ¡OJO! No poner '()' en la funcion ya que si no se ejecutará inmediatamente
         self.ventana.after(1000, self.BusquedaDB)
         #Algoritmo para centrar la ventana
-        ventana_ancho=670
-        ventana_alto=750
+        ventana_ancho=680
+        ventana_alto=770
         pantalla_ancho=self.ventana.winfo_screenwidth() #Obtenemos el ancho en píxeles del monitor
         pantalla_alto=self.ventana.winfo_screenheight() #Obtenemos el alto en píxeles del monitor
         pos_x=int((pantalla_ancho/2)-(ventana_ancho/2))
         pos_y=int((pantalla_alto/2)-(ventana_alto/2))
         self.ventana.geometry(f"{ventana_ancho}x{ventana_alto}+{pos_x}+{pos_y}") #Centramos la ventana
         self.ventana.resizable(False, False)
+        #Indicamos la ruta del icono de la ventana
+        self.ventana.iconbitmap(os.path.join(imagenes_ruta, "patient.ico"))
         self.ventana.mainloop()
 
     #Metodo para crear el formulario de entrada de datos
     def Header(self):
-        self.Encabezado=ttk.Label(self.frame1, text="Automatizar Citas", anchor="center", foreground="#E74C3C", font=("Comic Sans MS", 20, "italic")) #El atributo anchor viene siendo como un align
-        self.Encabezado.grid(column=0, row=0, sticky="nswe", ipady=20)
+        self.Encabezado=ttk.Label(self.frame1, text="Automatizar Citas", anchor="center", foreground="#28B463", font=("Comic Sans MS", 20, "italic"), image=self.logo, compound="left") #El atributo 'anchor' viene siendo como un align, y 'compound' es la ubicación de la imagen respecto al texto
+        self.Encabezado.grid(column=0, row=0, padx=(0, 60), sticky="nswe",ipady=20, ipadx=200)
         self.titulo_disponibles=ttk.Label(self.frame2, text="Disponibles", font=("Arial", 14, "bold"))
         self.titulo_disponibles.grid(column=0, row=0, columnspan=2, pady=(0, 20))
         self.titulo_disponibles_adeslas=ttk.Label(self.frame2, text="Adeslas", anchor="center", borderwidth=1, relief="groove")
@@ -110,6 +118,8 @@ class Aplicacion:
         #Agregamos el encabezado al scrolledtext (Recordar que debemos de partir desde el final para una mejor organizacion)
         self.encabezado=f"{'NUMERO':<10}{'NOMBRE':<50}{'SEGURO':<10}{'CONSULTAS':<10}"
         self.scrolledtext.insert(tk.END, self.encabezado)
+        #Desactivamos la escritura en el scrolledtext
+        self.scrolledtext.configure(state="disabled")
 
     #Metodo para crear el formulario de seguros
     def FormularioSeguros(self):
@@ -178,8 +188,8 @@ class Aplicacion:
         ventana_alto=100
         ubicacion_padre_ancho=self.ventana.winfo_x() #Obtenemos la posición actual en píxeles de la ventana padre (ancho)
         ubicacion_padre_alto=self.ventana.winfo_y() #Obtenemos la posición actual en píxeles de la ventana padre (alto)
-        pos_x=int(ubicacion_padre_ancho+((670/2)-(ventana_ancho/2)))
-        pos_y=int(ubicacion_padre_alto+((750/2)-(ventana_alto/2)))
+        pos_x=int(ubicacion_padre_ancho+((680/2)-(ventana_ancho/2)))
+        pos_y=int(ubicacion_padre_alto+((770/2)-(ventana_alto/2)))
         self.ventanacarga.geometry(f"{ventana_ancho}x{ventana_alto}+{pos_x}+{pos_y}") #La centramos en la ubicación actual de la ventana padre
         self.ventanacarga.resizable(False, False)       
     
@@ -329,6 +339,8 @@ class Aplicacion:
 
     #Metodo escribir en el scrolledtext
     def MostrarInserciones(self, listado):
+        #Activamos la escritura en el scrolledtext
+        self.scrolledtext.configure(state="normal")
         #Vaciamos el scrolledtext
         self.scrolledtext.delete(1.0, tk.END)
         #Insertamos el encabezado
@@ -349,6 +361,8 @@ class Aplicacion:
                 fila=f"{operacion:<10}{nombre_completo:<50}{seguro:<10}{consultas:<10}"
                 #La insertamos en el scrolledtext siempre desde el final para mejor organizacion
                 self.scrolledtext.insert(tk.END, fila)
+        #Desactivamos la escritura en el scrolledtext
+        self.scrolledtext.configure(state="disabled")
 
     #Metodo para cambiar el estado de la ventana principal
     def EstadoVentana(self, estado):
@@ -361,4 +375,6 @@ class Aplicacion:
         sys.exit(0)
 
 #Bloque principal y creacion de objeto
-iniciar=Aplicacion()
+#De esta forma evitamos que se ejecute automaticamente desde otro modulo
+if __name__=="__main__":
+    iniciar=Aplicacion()
