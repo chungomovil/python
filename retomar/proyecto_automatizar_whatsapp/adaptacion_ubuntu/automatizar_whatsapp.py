@@ -28,14 +28,14 @@ def BorrarCampos(navegador):
 
 def BuscarNumero(navegador, telefono, contador=0, sleep=0):
     global excepcion
-    busqueda=False
+    global busqueda
     try:
         boton_busqueda=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements_by_class_name("_28-cz"))
         boton_busqueda[0].click()
         time.sleep(sleep)
         campo=navegador.find_elements_by_class_name("_13NKt")
         campo[0].send_keys(telefono)
-        time.sleep(10)
+        time.sleep(20)
         campo[0].send_keys(Keys.ENTER)
         verificacion=navegador.find_elements_by_class_name("_1JFry")
         if len(verificacion)==0:
@@ -43,10 +43,8 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
         else:
             if contador==0:
                 BuscarNumero(navegador, telefono, 1, 10)
-        return busqueda
     except Error as mensaje:
         excepcion=str(type(mensaje).__name__)
-        return "ERROR"
 
 def EscribirMensaje(navegador, nombre):
     campo=navegador.find_elements_by_class_name("_13NKt")
@@ -71,14 +69,15 @@ listado_inexistentes=[]
 excepcion=""
 navegador=AbrirWhatsApp()
 for nombre, apellidos, numero in listado_pacientes:
+    busqueda=False
     paciente=nombre+" "+apellidos
-    verificacion=BuscarNumero(navegador, numero)
-    if verificacion!="ERROR":
-        if verificacion==True:
+    BuscarNumero(navegador, numero)
+    if excepcion=="":
+        if busqueda==True:
             listado_existentes.append(paciente)
             EscribirMensaje(navegador, nombre)
         else:
-            if verificacion==False:
+            if busqueda==False:
                 listado_inexistentes.append(paciente)
         BorrarCampos(navegador)
     else:

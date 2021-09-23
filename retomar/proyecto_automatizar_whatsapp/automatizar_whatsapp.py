@@ -38,9 +38,9 @@ def BorrarCampos(navegador):
 
 #Funcion recursiva para buscar los contactos por su número de teléfono
 def BuscarNumero(navegador, telefono, contador=0, sleep=0):
-    #Indicamos a python que se usará la variable global de excepcion (de lo contrario no sabrá si es local o global)
+    #Indicamos a python que se usará las variables globales de excepcion y busqueda (de lo contrario no sabrá si es local o global)
     global excepcion
-    busqueda=False
+    global busqueda
     #Alboritmo a chequear
     try:
         #Almacenamos el boton de búsqueda en una variable
@@ -55,7 +55,7 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
         #Escribimos el teléfono en el campo (recordar que al tener un atributo de clase y no id en HTML, pueden haber varios)
         campo[0].send_keys(telefono)
         #Tiempo que se pausará la ejecución (para dar margen a encontrar el teléfono)
-        time.sleep(10)
+        time.sleep(20)
         #Presionamos la tecla "ENTER"
         campo[0].send_keys(Keys.ENTER)
         #Verificamos que el contacto existe
@@ -67,15 +67,15 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
             #Si es el primer intento de búsqueda lanzamos nuevamente la función para buscarlo SOLO una vez más
             if contador==0:
                 BuscarNumero(navegador, telefono, 1, 10)
-        #Retornamos el resultado
+        #Retornamos el resultado (VERSION ANTERIOR)
         #OJO! Recordar que en las funciones recursivas si ponemos los retornos dentro de condiciones hará que retorne "None"
-        return busqueda
+        #return busqueda
     #En caso de no haberse cargado la página
     except Error as mensaje:
         #Generamos el nombre de la excepción y la guardamos en su variable correspondiente
         excepcion=str(type(mensaje).__name__)
-        #Retornamos
-        return "ERROR"
+        #Retornamos (VERSION ANTERIOR)
+        #return "ERROR"
 
 #Funcion para escribir el mensaje
 def EscribirMensaje(navegador, paciente):
@@ -111,22 +111,23 @@ excepcion=""
 navegador=AbrirWhatsApp()
 #Bucle para cada paciente
 for nombre, apellidos, numero in listado_pacientes:
+    #Variable donde se guardará el estado predeterminado de la búsqueda
+    busqueda=False
     #Concatenamos el nombre completo
     paciente=nombre+" "+apellidos
-    #Buscamos el numero y almacenamos la respuesta
-    verificacion=BuscarNumero(navegador, numero)
+    #Buscamos el numero
+    BuscarNumero(navegador, numero)
     #Si no se genera excepcion
-    if verificacion!="ERROR":
+    if excepcion=="":
         #Si el numero existe
-        if verificacion==True:
+        if busqueda==True:
             #Lo agregamos a la lista de existentes
             listado_existentes.append(paciente)
             #Le enviamos el mensaje
 #            EscribirMensaje(navegador, nombre)
         #Si no existe
         else:
-            #Si retorna False
-            if verificacion==False:
+            if busqueda==False:
                 #Lo agregamos a la lista de que no existe
                 listado_inexistentes.append(paciente)
         #Borramos los campos para introducir nuevos datos
