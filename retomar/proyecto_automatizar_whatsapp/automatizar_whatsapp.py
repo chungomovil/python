@@ -59,7 +59,7 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
         #Presionamos la tecla "ENTER"
         campo[0].send_keys(Keys.ENTER)
         #Verificamos que el contacto existe
-        verificacion=navegador.find_elements_by_class_name("_1JFry")
+        verificacion=navegador.find_elements_by_class_name("f8jlpxt4")
         #Si existe cambiamos la variable a True
         if len(verificacion)==0:
             busqueda=True
@@ -91,7 +91,7 @@ def EscribirMensaje(navegador, paciente):
     campo[1].send_keys(Keys.LEFT_SHIFT+Keys.ENTER)
     mensaje="Estamos a su disposición."
     campo[1].send_keys(mensaje)
-    campo[1].send_keys(Keys.ENTER)
+#    campo[1].send_keys(Keys.ENTER)
     time.sleep(5)
 
 #Funcion para cerrar el navegador
@@ -124,7 +124,7 @@ for nombre, apellidos, numero in listado_pacientes:
             #Lo agregamos a la lista de existentes
             listado_existentes.append(paciente)
             #Le enviamos el mensaje
-#            EscribirMensaje(navegador, nombre)
+            EscribirMensaje(navegador, nombre)
         #Si no existe
         else:
             if busqueda==False:
@@ -140,4 +140,4 @@ for nombre, apellidos, numero in listado_pacientes:
 #Cerramos el navegador
 CerrarNavegador(navegador)
 #Llamamos al modulo que envia por email el resultado
-notificacion_mail.EnviarEmail(excepcion, listado_existentes, listado_inexistentes)
+notificacion_mail.DatosMensaje(excepcion, listado_existentes, listado_inexistentes)

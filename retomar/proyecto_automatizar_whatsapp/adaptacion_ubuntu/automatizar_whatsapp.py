@@ -37,7 +37,7 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
         campo[0].send_keys(telefono)
         time.sleep(20)
         campo[0].send_keys(Keys.ENTER)
-        verificacion=navegador.find_elements_by_class_name("_1JFry")
+        verificacion=navegador.find_elements_by_class_name("f8jlpxt4")
         if len(verificacion)==0:
             busqueda=True
         else:
