@@ -25,7 +25,7 @@ def AbrirWhatsApp():
     return navegador
 
 def BorrarCampos(navegador):
-    campos=navegador.find_elements(By.CLASS_NAME, "_13NKt")
+    campos=navegador.find_elements(By.CLASS_NAME, "Er7QU")
     for x in range(len(campos)):
         campos[x].clear()
 
@@ -33,10 +33,10 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
     global excepcion
     global busqueda
     try:
-        boton_busqueda=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements(By.CLASS_NAME, "_28-cz"))
+        boton_busqueda=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements(By.CLASS_NAME, "Er7QU"))
         boton_busqueda[0].click()
         time.sleep(sleep)
-        campo=navegador.find_elements(By.CLASS_NAME, "_13NKt")
+        campo=navegador.find_elements(By.CLASS_NAME, "Er7QU")
         campo[0].send_keys(telefono)
         time.sleep(20)
         campo[0].send_keys(Keys.ENTER)
@@ -45,6 +45,7 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
             busqueda=True
         else:
             if contador==0:
+                BorrarCampos(navegador)
                 BuscarNumero(navegador, telefono, 1, 10)
     except Error as mensaje:
         excepcion=str(type(mensaje).__name__)

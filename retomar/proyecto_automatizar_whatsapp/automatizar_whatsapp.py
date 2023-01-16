@@ -35,7 +35,7 @@ def AbrirWhatsApp():
 #Funcion para borrar los campos
 def BorrarCampos(navegador):
     #Buscamos los campos por su etiqueta
-    campos=navegador.find_elements(By.CLASS_NAME, "_13NKt")
+    campos=navegador.find_elements(By.CLASS_NAME, "Er7QU")
     #Borramos todos ellos
     for x in range(len(campos)):
         campos[x].clear()
@@ -49,13 +49,13 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
     try:
         #Almacenamos el boton de búsqueda en una variable
         #"WebDriverWait" es una funcion de modulo webdriver que pausa la ejecución del programa hasta que no esté disponible el valor que se la ha pasado por la funcion "lambda"
-        boton_busqueda=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements(By.CLASS_NAME, "_28-cz")) #El atributo "timeout" indica el tiempo límite de la pausa, mientras que "pool_frequency"  es la frecuencia en segundos con la que buscará el valor
+        boton_busqueda=WebDriverWait(navegador, timeout=120, poll_frequency=1).until(lambda valor: valor.find_elements(By.CLASS_NAME, "Er7QU")) #El atributo "timeout" indica el tiempo límite de la pausa, mientras que "pool_frequency"  es la frecuencia en segundos con la que buscará el valor
         #Damos click al botón de búsqueda (es el mismo botón que retroceder)
         boton_busqueda[0].click()
         #Pausamos un tiempo el programa para que el programa procese bien la introduccion de datos entre teléfono y teléfono
         time.sleep(sleep)
         #Almacenamos en una variable la etiqueta del campo para instroducir el número telefónico
-        campo=navegador.find_elements(By.CLASS_NAME, "_13NKt") 
+        campo=navegador.find_elements(By.CLASS_NAME, "Er7QU") 
         #Escribimos el teléfono en el campo (recordar que al tener un atributo de clase y no id en HTML, pueden haber varios)
         campo[0].send_keys(telefono)
         #Tiempo que se pausará la ejecución (para dar margen a encontrar el teléfono)
@@ -70,6 +70,7 @@ def BuscarNumero(navegador, telefono, contador=0, sleep=0):
         else:
             #Si es el primer intento de búsqueda lanzamos nuevamente la función para buscarlo SOLO una vez más
             if contador==0:
+                BorrarCampos(navegador)
                 BuscarNumero(navegador, telefono, 1, 10)
         #Retornamos el resultado (VERSION ANTERIOR)
         #OJO! Recordar que en las funciones recursivas si ponemos los retornos dentro de condiciones hará que retorne "None"
