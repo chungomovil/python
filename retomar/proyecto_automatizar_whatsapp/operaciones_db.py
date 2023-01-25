@@ -30,7 +30,7 @@ def CumplenHoy():
     #Obtenemos la fecha formateada y la convertimos en tupla para la consulta sql
     hoy=(FechaHoy(), )
     #Consulta sql (con subconsulta) para obtener los pacientes que cumples en la fecha actual
-    consulta="SELECT nombres, apellidos, movil FROM (SELECT nombres, apellidos, movil, DATE_FORMAT(fecha_nacimiento, '%m-%d') as nacimiento FROM paciente) as nacimiento WHERE nacimiento=%s AND movil NOT LIKE ''"
+    consulta="SELECT nombres, apellidos, movil FROM (SELECT nombres, apellidos, movil, DATE_FORMAT(fecha_nacimiento, '%m-%d') as fecha_nac FROM paciente WHERE YEAR(fecha_nacimiento)>'1001') as nacimiento WHERE fecha_nac=%s AND movil NOT LIKE ''"
     #Ejecutamos la consulta
     cursor.execute(consulta, hoy)
     #Extraemos todas sus filas

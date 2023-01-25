@@ -16,7 +16,7 @@ def CumplenHoy():
     conexion=Conexion()
     cursor=conexion.cursor()
     hoy=(FechaHoy(), )
-    consulta="SELECT nombres, apellidos, movil FROM (SELECT nombres, apellidos, movil, DATE_FORMAT(fecha_nacimiento, '%m-%d') as nacimiento FROM paciente) as nacimiento WHERE nacimiento=%s AND movil NOT LIKE ''"
+    consulta="SELECT nombres, apellidos, movil FROM (SELECT nombres, apellidos, movil, DATE_FORMAT(fecha_nacimiento, '%m-%d') as fecha_nac FROM paciente WHERE YEAR(fecha_nacimiento)>'1001') as nacimiento WHERE fecha_nac=%s AND movil NOT LIKE ''"
     cursor.execute(consulta, hoy)
     listado_pacientes=cursor.fetchall()
     return listado_pacientes
