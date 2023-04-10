@@ -25,7 +25,7 @@ def ExtraerDatos():
 
 #FUNCION PARA COPIAR LOS DATOS AL DOCUMENTO TEMPORAL
 def CopiarDatos(fragmento):
-    ruta=os.path.dirname(__file__)+"\\extracto.txt"
+    ruta=str(os.path.dirname(__file__))+"\\extracto.txt"
     archivo=open(ruta,"w")
     archivo.writelines(fragmento)
     archivo.close()
@@ -35,7 +35,7 @@ def CopiarDatos(fragmento):
 def QuitarDatos(total, fragmento):
     fecha=UltimaFecha(fragmento)
     fragmento_fin=len(fragmento)
-    ruta=os.path.dirname(__file__)+"\\almacen.txt"
+    ruta=str(os.path.dirname(__file__))+"\\almacen.txt"
     archivo=open(ruta,"w")
     if (len(total)>fragmento_fin): #ASI EVITAMOS QUE INTENTE BUSCAR FUERA DEL INDICE (SOLO CUANDO QUEDAN MUY POCOS DATOS EN EL DOCUMENTO PRINCIPAL)
         if total[fragmento_fin].find("?")>0:
@@ -54,7 +54,7 @@ def UltimaFecha(fragmento):
 
 #FUNCION PARA EXPORTAR LOCALMENTE EL DOCUMENTO PRINCIPAL
 def ExportarDocumento():
-    ruta_origen=os.path.dirname(__file__)+"\\almacen.txt"
+    ruta_origen=str(os.path.dirname(__file__))+"\\almacen.txt"
     carpeta_destino="D:\\documentos\\diario"
     ruta_destino="D:\\documentos\\diario\\almacen.txt"
     try:
