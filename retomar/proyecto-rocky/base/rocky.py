@@ -5,7 +5,12 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import scrolledtext as st
 from tkinter import messagebox as mb
-from threading import *
+import threading as Hilo
+import sys
+import win32print
+import win32api
+import tempfile
+
 
 class Aplicacion:
     #TOKEN DE OPENAI
@@ -28,6 +33,13 @@ class Aplicacion:
         self.subframe=tk.Frame(self.canvas)
         self.canvas.create_window((0,0), window=self.subframe, anchor="nw")
         """
+        #Creamos el menu
+        barra_menu=tk.Menu()
+        opciones=tk.Menu(barra_menu, tearoff=0)
+        opciones.add_command(label="Imprimir", command=self.Imprimir)
+        opciones.add_command(label="Salir", command=self.Salir)
+        barra_menu.add_cascade(menu=opciones, label="Opciones")
+        self.ventana.config(menu=barra_menu)
         #Creamos los estilos para las diferentes etiquetas
         self.estilos=ttk.Style()
         self.estilos.configure("titulo.TLabel", font=("Arial 16 bold"), foreground="green")
@@ -93,23 +105,40 @@ class Aplicacion:
     def operaciones(self):
         texto_filtrado=self.Filtrado(self.entrada.get())
         if texto_filtrado!=False:
-            #Creamos la barra de carga y su etiqueta
-            self.barracarga_comentario=ttk.Label(self.ventana, text="Cargando respuesta...", style="barracarga.TLabel")
-            self.barracarga_comentario.grid(column=0, row=3, padx=20, sticky="w")
-            self.barracarga=ttk.Progressbar(self.ventana, length=200, mode="indeterminate" )
-            self.barracarga.grid(column=0, row=4, padx=20, sticky="w")
-            self.barracarga.start(10)
+            #Controles mientras carga la respuesta el robot
             self.ControlChat("USUARIO", self.entrada.get())
-            respuesta=openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.mensajes, max_tokens=500) #Llamada a la API de OPENAI
+            self.BarraCarga(1)
+            #Vaciamos el campo de escritura y desactivamos las acciones del chat
+            self.entrada.delete(0, tk.END)
+            self.entrada.unbind("<Return>")
+            self.entrada.configure(state="disabled")
+            self.enviar.configure(state="disabled")
+            #Obtenemos la respuesta del robot
+            respuesta=self.ControlChatGPT()
+            #Controlamos si la API retorna una respuesta
+            if respuesta!=False:
+                #Insertamos la respuesta en el scrolledtext
+                self.ControlChat("ROCKY", respuesta)
+            else:
+                self.ControlChat("ROCKY", "Lo siento no pude encontrar la respuesta, puedes volver a preguntarmelo.")
+            #Volvemos a activar las acciones del chat
+            self.entrada.bind("<Return>", self.HiloEjecucion)
+            self.entrada.configure(state="normal")
+            self.enviar.configure(state="normal")
+            self.BarraCarga(0)
+    
+    #Metodo para llamar a la API de ChatGPT
+    def ControlChatGPT(self):
+        try:
+            respuesta=openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.mensajes, max_tokens=500, request_timeout=60) #Llamada a la API de OPENAI, con request_timeout limitamos el tiempo de espera por repuesta
             respuesta=respuesta['choices'][0]['message']['content'] #Como nos devuelve un archivo con estructura JSON extraemos su contenido de esta forma
             self.mensajes.append({"role": "assistant", "content": respuesta}) #Agregamos la respuesta a una lista para que el robot sepa que nos ha respondido y asi tenga contexto en respuestas futuras
-            #Insertamos la respuesta en el scrolledtext y vaciamos y destruimos otros campos
-            self.ControlChat("ROCKY", respuesta)
-            self.entrada.delete(0, tk.END)
-            self.barracarga_comentario.destroy()
-            self.barracarga.stop()
-            self.barracarga.destroy()
-
+        except:
+            mb.showerror("ERROR", "ROCKY ha tardado demasiado en responder, volver a intentarlo.")
+            respuesta=False
+        finally:
+            return respuesta
+    
     #Metodo para filtrar el texto introducido
     def Filtrado(self, texto):
         comandos=["!redactor", "!informatico", "!new"]
@@ -124,7 +153,9 @@ class Aplicacion:
                 if comando=="!informatico":
                     self.mensajes.append({"role":"system", "content":"Actúa como si fueras un experto en informática."})
                 if comando=="!new":
-                    self.Alerta("¿Desea limpiar esta conversación y comenzar una nueva?")
+                    repuesta=self.Alerta("¿Desea limpiar esta conversación y comenzar una nueva?")
+                    if repuesta==True:
+                        self.ResetChat()
                     return False
             else:
                 self.mensajes.append({"role":"user", "content": texto}) #Agregamos los mensajes del usuario en una lista para que el robot tenga contexto en preguntas futuras
@@ -151,12 +182,64 @@ class Aplicacion:
     #Metodo para mostrar alertas
     def Alerta(self, mensaje):
         pregunta=mb.askyesno(message=mensaje, title="¡Cuidado!")
-        if pregunta==True:
-            self.ResetChat()
+        return pregunta
+
+    #Metodo para ejecutar la barra de carga
+    def BarraCarga(self, estado):
+        if estado==1:
+            #Creamos la barra de carga y su etiqueta
+            self.barracarga_comentario=ttk.Label(self.ventana, text="Cargando respuesta...", style="barracarga.TLabel")
+            self.barracarga_comentario.grid(column=0, row=3, padx=20, sticky="w")
+            self.barracarga=ttk.Progressbar(self.ventana, length=200, mode="indeterminate" )
+            self.barracarga.grid(column=0, row=4, padx=20, sticky="w")
+            self.barracarga.start(10)
+        else:
+            self.barracarga_comentario.destroy()
+            self.barracarga.stop()
+            self.barracarga.destroy()
+
     #Metodo para trabajar con hilos, de esta forma no se congela la barra de carga al esperar la respuesta de la API
     def HiloEjecucion(self, event=""):
-        t1=Thread(target=self.operaciones) #Creamos el hilo en dicho metodo
-        t1.start() #Inicializamos el hilo
+        self.t1=Hilo.Thread(target=self.operaciones)#Creamos el hilo en dicho metodo
+        self.t1.start() #Inicializamos el hilo
+    
+    #Metodo para preparar el texto a imprimir
+    def PrepararImpresion(self):
+        cadena=""
+        #Recorremos el diccionario y los escribimos en una cadena de texto
+        for x in range(len(self.mensajes)):
+            for clave, valor in self.mensajes[x].items():
+                if valor=="user" or valor=="assistant":
+                    if valor=="user":
+                        cadena+="\n"+"USUARIO dice:"+"\n"
+                    else:
+                        cadena+="\nRobot(ROCKY) dice:\n"
+                else:
+                    cadena+="\n"+valor+"\n"
+        return cadena
+
+    #Metodo para imprimir
+    def Imprimir(self):
+        #Mostramos alerta de impresion
+        respuesta=self.Alerta("¿Desea imprimir la conversación?")
+        if respuesta==True:
+            #Obtenemos la cadena formateada
+            cadena=self.PrepararImpresion()
+            #Obtenemos la impresora predeterminada del sistema
+            self.impresora=win32print.GetDefaultPrinter()
+            #Creamos un archivo temporal
+            archivo=tempfile.NamedTemporaryFile(suffix=".txt", prefix="print", delete=False) #Poner el parametro "delete" para que no de errores de permisos de edicion
+            #Abrimos el archivo y escribimos el contenido
+            #La clausula "with" significa que tras ejecutarse se cerrara el archivo en cuestion
+            with open(archivo.name, "w") as archivo_nombre:
+                archivo_nombre.write(cadena)
+            #Lanzamos el comando para imprimir
+            win32api.ShellExecute(0, "print", archivo.name, None, ".", 0)
+            mb.showinfo("Información","IMPRIMIENDO...")
+
+    #Metodo para salir del programa
+    def Salir(self):
+        sys.exit(0)
 
 
 #Bucle principal y llamada al programa
