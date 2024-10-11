@@ -1,3 +1,4 @@
+#VERSION GPT-4o
 #Importamos los modulos necesarios
 import openai
 import credenciales
@@ -130,7 +131,7 @@ class Aplicacion:
     #Metodo para llamar a la API de ChatGPT
     def ControlChatGPT(self):
         try:
-            respuesta=openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.mensajes, max_tokens=500, request_timeout=60) #Llamada a la API de OPENAI, con request_timeout limitamos el tiempo de espera por repuesta
+            respuesta=openai.ChatCompletion.create(model="gpt-4o", messages=self.mensajes, max_tokens=500, request_timeout=60) #Llamada a la API de OPENAI, con request_timeout limitamos el tiempo de espera por repuesta
             respuesta=respuesta['choices'][0]['message']['content'] #Como nos devuelve un archivo con estructura JSON extraemos su contenido de esta forma
             self.mensajes.append({"role": "assistant", "content": respuesta}) #Agregamos la respuesta a una lista para que el robot sepa que nos ha respondido y asi tenga contexto en respuestas futuras
         except:

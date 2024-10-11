@@ -32,7 +32,8 @@ def EscribirMensaje(navegador, paciente):
     #Algoritmo a intentar
     try:
         #Esperamos a que este disponible el boton de enviar el Whatsapp Web
-        boton_busqueda=WebDriverWait(navegador, timeout=60, poll_frequency=5).until(lambda valor: valor.find_elements(By.CLASS_NAME, "_3XKXx"))
+        boton_busqueda=WebDriverWait(navegador, timeout=60, poll_frequency=5).until(lambda valor: valor.find_elements(By.CLASS_NAME, "x1iy03kw"))
+        time.sleep(1)
         #boton_busqueda[0].click()
         #Agregamos el nombre a la lista si se envió el mensaje
         listado_existentes.append(nombre_completo)
